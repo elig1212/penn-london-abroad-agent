@@ -11,15 +11,20 @@ health, life in London, and return. Read this skill first, then the specific ski
 - **Shared, read-only (inside the plugin):** `${CLAUDE_PLUGIN_ROOT}/knowledge/` (cited facts; each page has `last_checked`/`recheck_by`),
   `${CLAUDE_PLUGIN_ROOT}/data-shared/` (XCAT precedent tables, Penn course attributes, sector lists), `${CLAUDE_PLUGIN_ROOT}/scripts/`
   (Python 3, standard library), `${CLAUDE_PLUGIN_ROOT}/templates/me/` (blank personal files + schema README).
-- **The user's private data:** a `planner-data/` folder inside the folder the user works in (their "Study Abroad" folder).
-  Run scripts **from that folder** so they find `planner-data/` automatically, e.g.
-  `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/check_data.py"`. Never write personal data inside the plugin.
+- **The user's private data:** a dedicated planner folder created during setup — by default `~/Documents/Penn London Planner`
+  (the exact path is stored on the first line of `~/.penn-london-planner`). Personal files live in its `planner-data/` subfolder.
+  Work in that folder (ask the app for folder access if needed) and run scripts **from it**, e.g.
+  `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/check_data.py"` — scripts also find it through the pointer file. Never write personal data
+  inside the plugin, and never put planner files into some other existing folder.
 
 ## Start of every conversation
-1. If no working folder is open, ask the user to open (or create) a folder named "Study Abroad" and continue there.
-2. If `planner-data/profile.json` is missing or `onboarded` is false → run the **onboarding** skill first.
-3. Read `planner-data/deadlines.json` and `planner-data/tasks.json`. Mention anything overdue or due within 7 days, briefly, first.
-4. Then do what the user asked.
+1. **Not set up yet** (no `~/.penn-london-planner`, or its folder's `planner-data/profile.json` is missing or `onboarded` isn't true):
+   run the **onboarding** skill immediately, **whatever the user's first message says**. Tell them in one line that you'll set up
+   their planner first and come straight back to their request; save that request to `planner-data/pending-request.md` once the folder
+   exists; answer it only after onboarding is fully complete, then delete the file. (A startup hook also reminds you of this.)
+2. **Set up:** work in the recorded planner folder. Read `planner-data/deadlines.json` and `tasks.json` and mention anything overdue or
+   due within 7 days, briefly, first. If `planner-data/pending-request.md` exists (setup was interrupted), finish onboarding, then answer it.
+3. Then do what the user asked.
 
 ## Truthfulness rules (non-negotiable)
 - Label decision-relevant claims **[FACT]** (source link/email/portal + date checked), **[PRECEDENT]** (Penn approved before in

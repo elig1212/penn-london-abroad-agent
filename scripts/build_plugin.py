@@ -92,6 +92,7 @@ def build(version):
                 else: shutil.copy2(src_f, dst_f)
     os.makedirs(os.path.join(sk, "plugin-updates"))
     open(os.path.join(sk, "plugin-updates", "SKILL.md"), "w").write(PLUGIN_UPDATES)
+    shutil.copytree(os.path.join(ROOT, "plugin-src", "hooks"), os.path.join(OUT, "hooks"))
     for d in ("knowledge", "data-shared", "templates"):
         shutil.copytree(os.path.join(ROOT, d), os.path.join(OUT, d), ignore=shutil.ignore_patterns(".DS_Store"))
     shutil.copytree(os.path.join(ROOT, "scripts"), os.path.join(OUT, "scripts"),

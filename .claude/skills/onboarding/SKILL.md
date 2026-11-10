@@ -1,6 +1,6 @@
 ---
 name: onboarding
-description: Set up a new user almost hands-free — one round of quick popups, then Claude signs into Penn sites with the user, pulls their degree audit, Penn Abroad forms, email and program dates, syncs the calendar and builds the dashboard. Use when me/profile.json is missing or onboarded is false, or the user says "set me up", "get started", or "redo my setup".
+description: Runs first for every new user, before anything else they ask. Sets up the planner almost hands-free — one round of quick popups, then Claude signs into Penn sites with the user, pulls their degree audit, Penn Abroad forms, email and program dates, syncs the calendar and builds the dashboard. Use when me/profile.json is missing or onboarded is false, or the user says "set me up", "get started", or "redo my setup".
 ---
 # Onboarding — automatic setup
 The user should mostly sit back: answer **one popup round**, sign in when asked, and click a few approvals. Claude does the rest,
@@ -14,9 +14,20 @@ in order, without stopping to chat. Target: 10–15 minutes, about 5 clicks plus
   the next stage. Never stop the whole setup for one problem.
 - **Show progress, not chatter.** Before each stage, post one line like "Step 3 of 8 — Reading your Path@Penn degree audit…".
   After it, one line with the result ("✓ Economics major, Consumer Psych minor — 7 requirements left").
-- **Save after every stage** to `me/` (start by copying `templates/me/*` into `me/` without overwriting), so stopping loses nothing.
+- **Save after every stage** to `me/`, so stopping loses nothing.
 - **Approvals still apply:** sign-ins are the user's (never type passwords; use the password manager if connected), calendar events
   need one approval, nothing is submitted, sent, booked or deleted.
+
+## Step 0 — Create the planner folder (no questions)
+Onboarding starts as soon as the user sends any first message; save that message to `me/pending-request.md` right after this step
+and answer it only after Step 9.
+- **Plugin mode** (running from the plugin): always create a **new, dedicated folder** — `~/Documents/Penn London Planner` — even if
+  a "Study Abroad" or similar folder already exists. Never reuse or write into another existing folder. If that exact path already
+  exists and isn't a planner folder (no `planner-data/profile.json`), use `~/Documents/Penn London Planner 2` (3, …) instead.
+  Ask the app for access to the new folder if needed and work there. Create `planner-data/` inside it, copy `templates/me/*` into it,
+  and write the folder's absolute path as the only line of `~/.penn-london-planner`.
+- **Folder mode** (this repo on the maintainer's Mac): use `me/` in the repo as usual.
+One line to the user: "Created your planner folder: Documents/Penn London Planner."
 
 ## Step 1 — the only questions (one AskUserQuestion call)
 Say first: "I'll ask 4 quick questions, then set everything up myself. You'll just sign in to Penn once and approve a couple of things."
@@ -72,4 +83,5 @@ Create a scheduled task (Mondays 8am) from `templates/weekly-checkin-prompt.md` 
 Set `onboarded: true`; run `python3 scripts/check_data.py`; build and publish the dashboard (`dashboard` skill). Then show:
 - one-line profile, the 3 most urgent dates, what was synced, and the **Needs you** list (sign-ins skipped, items to confirm);
 - the dashboard link;
-- one last AskUserQuestion — "What next?": Plan my courses · Penn Abroad forms · Review my budget · I'm good for now.
+- then, if `me/pending-request.md` exists, say "Now, back to what you asked:", answer that request fully, and delete the file;
+- otherwise one last AskUserQuestion — "What next?": Plan my courses · Penn Abroad forms · Review my budget · I'm good for now.

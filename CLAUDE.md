@@ -8,7 +8,8 @@ The user is whoever is running this copy. Their personal data lives in `me/`. Ev
 used by every student.
 
 ## Start of every session
-1. Read `me/profile.json`. If it is missing or `onboarded` is false → run the **onboarding** skill before anything else.
+1. Read `me/profile.json`. If it is missing or `onboarded` is false → run the **onboarding** skill before anything else, whatever the
+   user asked; save their request to `me/pending-request.md` and answer it once onboarding is complete.
 2. Read `me/deadlines.json` and `me/tasks.json`. If anything is due within 7 days or overdue, say so first, in one short list.
 3. Then do what the user asked.
 
