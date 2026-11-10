@@ -18,6 +18,16 @@ It runs inside the **Claude desktop app** on your own Mac. Your personal data st
    and add deadlines to your calendar. If your Penn Abroad mail and your booking confirmations go to different inboxes,
    connect one and the agent will read the other in Chrome.
 
+## Optional extras
+- **Phone:** in the Claude desktop app, Settings → Claude Code → turn on "Connect new sessions to Remote Control". Then you can
+  continue any agent chat from the Claude mobile app (your Mac must be awake and online). Ask "publish my dashboard" to get a
+  private dashboard link that opens on your phone.
+- **Password manager (1Password):** install and enable the 1Password extension in the same Chrome that Claude in Chrome uses,
+  sign in to it, then ask Claude to sign in to Penn. Approve the 1Password prompt; Claude never sees your password.
+  Without it, you just sign in yourself when the agent asks.
+- **Weekly check-in:** ask "set up my weekly check-in" — the agent schedules a Monday sweep of your inboxes, Penn Abroad portal
+  and deadlines that refreshes your dashboard (runs while the Claude app is open; read-only).
+
 ## Using it
 Just ask in plain English, for example:
 - "What's due this week?"

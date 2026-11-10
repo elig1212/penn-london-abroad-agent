@@ -4,7 +4,7 @@ description: Track and help complete Penn Abroad PASSPORT (Terra Dotta / via-trm
 ---
 # Penn Abroad portal
 - Mail comes from messages@via-trm.com and goabroad@upenn.edu to the Penn inbox. Search: `from:(via-trm.com OR goabroad@upenn.edu)`.
-- Portal: Penn Abroad PASSPORT (linked in those emails). User signs in with PennKey (see CLAUDE.md logins).
+- Portal: https://pennabroad.via-trm.com → "Go to Portal" (PennKey SSO). Decline non-essential cookies. Read Dashboard → "My To Do List" (form, status, due) and "My Programs" (application status, forms accepted) with get_page_text/JS. Store status summary in `profile.penn_abroad_status`.
 1. List every application item (questionnaires, signature docs, uploads, learning content) with status and due date.
 2. Mirror them into `me/deadlines.json` (category penn-abroad) and `me/tasks.json`; cite the portal page/email.
 3. Helping fill a form: read the questions, draft answers from `me/` data, show the user, fill fields only after approval,

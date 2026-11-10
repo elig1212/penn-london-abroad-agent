@@ -1,10 +1,19 @@
 ---
-last_checked: never
-recheck_by: before first Wharton user
+last_checked: 2026-11-10
+recheck_by: 2027-03-01
 ---
 # Wharton undergraduates — study abroad credit
-[UNVERIFIED] Not yet researched. Before advising a Wharton student, research and cite:
-- Wharton undergraduate study-abroad credit policy and how courses post (concentration vs. general/flex credit, BEPP/FNCE/MKTG equivalents, any cap on transfer/abroad CU, pass/fail rules) — undergrad.wharton.upenn.edu.
-- Their Path@Penn audit (Wharton requirement names differ from the College).
-- XCAT precedents with Penn subjects FNCE/MKTG/MGMT/BEPP/OIDD/ACCT/WH for their host school.
-Then fill this page with [FACT]s and propose it via core-suggestions.
+Sources: undergrad-inside.wharton.upenn.edu (Wharton-approved study abroad programs page ?p=264; global opportunities; credit-away), checked 2026-11-10.
+- [FACT] **Business fundamentals and concentration requirements may not be taken abroad.** Business courses only count at
+  **Wharton-approved study abroad programs**.
+- [FACT] At Wharton-approved programs, courses typically count toward **Business Breadth, Liberal Arts & Sciences, and Unrestricted
+  Electives**.
+- [FACT] No online courses abroad. Courses need XCAT approval before departure; after the department gives an equivalency, email
+  the Wharton study abroad advisor to confirm which Liberal Arts & Sciences requirement it fills.
+- [FACT] Wharton students may not take business courses elsewhere after matriculation except at approved study abroad programs.
+  Credit away: courses taken pass/fail don't transfer; C or better needed. (credit-away page)
+- [UNVERIFIED] Whether QMUL, UCL or Goldsmiths is on the **Wharton-approved list** — read the approved-programs page
+  (undergrad-inside.wharton.upenn.edu/?p=264, UK section) in Chrome during onboarding and record the answer here.
+  If the host isn't Wharton-approved, a Wharton student's business-type modules likely earn no business credit.
+- Gen-ed: Wharton attributes include WUSS (Social Science), WUHM (Humanities), WUNM (Natural Science, Math & Engineering),
+  WUGE, WUTI, WUCN/WUCU (Cross-Cultural). Use `scripts/geneds.py --need "wharton social science"` etc.
