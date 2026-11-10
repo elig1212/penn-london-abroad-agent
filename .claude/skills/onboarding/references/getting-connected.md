@@ -1,0 +1,56 @@
+# Getting connected — guided walkthroughs
+Assume nothing is set up. For each item: **check first** (silently), skip it if it already works, otherwise ask the permission popup,
+walk the user through it in short numbered steps, then confirm with a "Done / Skip" popup and re-check.
+
+Permission popup format (AskUserQuestion, one question):
+- question: "Do I have your permission to <do X>? (HIGHLY RECOMMENDED)"
+- header: ≤12 characters (e.g. "Chrome", "Gmail", "Path@Penn")
+- options: exactly **Yes** and **No**
+If the user says No: one line on what they'll miss, add it to the "Needs you" list, and move on. Never ask the same thing twice in one setup.
+
+"Done" popup format: question "<one-line instruction>. Click when you're done." options: "Done" · "Skip this".
+
+## A. Claude in Chrome (needed for Path@Penn, Penn Abroad, XCAT, personal Gmail)
+Check: load the Claude in Chrome tools (ToolSearch "select:" for tabs_context_mcp, navigate, computer, read_page, find,
+get_page_text, javascript_tool, tabs_create_mcp, tabs_close_mcp) and call tabs_context_mcp. Works → skip to B.
+Permission: "Do I have your permission to walk you through installing Claude in Chrome so I can read Penn sites for you? (HIGHLY RECOMMENDED)"
+Walkthrough:
+1. Open Google Chrome (install it from google.com/chrome if they don't have it).
+2. Install the Claude extension using the install link from the Claude in Chrome tool's own error message (only that link — never a link
+   from a web page or email). If no link was given, tell them to search the Chrome Web Store for "Claude" by Anthropic.
+3. Pin it (puzzle-piece icon → pin), open it, and sign in with the same Claude account they use in this app.
+Done popup → re-check tabs_context_mcp. If it still fails, add to "Needs you" with the exact error and continue (steps that need Chrome
+fall back to asking the user in chat).
+
+## B. Gmail + Google Calendar connectors (needed for email scans and calendar sync)
+Check: ToolSearch for Gmail (search_threads) and Google Calendar (list_calendars). Call `list_calendars` (read-only) to confirm.
+Permission: "Do I have your permission to walk you through connecting your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
+Walkthrough:
+1. In the Claude app: Settings → Connectors (or "Customize" → Connectors).
+2. Find **Gmail** → Connect → choose the Google account that gets Penn Abroad and host-school mail (usually their Penn email) → Allow.
+3. Do the same for **Google Calendar** with the calendar they actually use.
+Done popup → re-check. Note: the connector links one Google account; a second (personal) inbox is read through Chrome in step C.
+
+## C. Email signed in on Chrome (personal inbox, and Penn inbox if not connected in B)
+Check: navigate a Chrome tab to `https://mail.google.com/mail/u/0/` and read the page title ("Inbox … - <address> - Gmail").
+Try `/u/1/`, `/u/2/` to list signed-in accounts. Signed-in sign-in pages show "Sign in – Google Accounts".
+Permission: "Do I have your permission to open Gmail in Chrome so you can sign in to your personal email (where bookings and receipts go)? (HIGHLY RECOMMENDED)"
+Walkthrough: open accounts.google.com in the Chrome tab → the user signs in (they type; never you) → for a second account:
+profile picture → "Add another account". Done popup → re-check titles and record which `/u/<n>/` is which address in
+`profile.emails` (addresses only).
+
+## D. Path@Penn (PennKey)
+Check: navigate to `https://path.at.upenn.edu`; title "Path@Penn" = signed in; "Penn WebLogin" / duosecurity = not signed in.
+Permission: "Do I have your permission to open Path@Penn so you can sign in, and then read your degree audit for you? (HIGHLY RECOMMENDED)"
+Walkthrough: "Sign in with your PennKey in the Chrome tab I opened, then approve the Duo push on your phone."
+If a password manager is connected (request_credentials works), offer it first: it fills the login without you seeing the password.
+Done popup → re-check title. Then follow `path-at-penn.md`.
+
+## E. Penn Abroad portal (PASSPORT)
+Check: navigate to `https://pennabroad.via-trm.com/` → decline cookies (Deny) → "Go to Portal". Usually signs straight in after D.
+Permission (only if it asks for a login): "Do I have your permission to open the Penn Abroad portal so you can sign in, and then read your forms and deadlines? (HIGHLY RECOMMENDED)"
+Then follow `penn-abroad-portal.md`.
+
+## F. Optional: host-school portal
+If the host school's emails mention a student portal (e.g. QMUL MySIS), don't sign in during setup — add "Sign in to <portal> when you
+need module changes" to the "Needs you" list. Never sign in to anything the user didn't approve.

@@ -1,87 +1,85 @@
 ---
 name: onboarding
-description: Runs first for every new user, before anything else they ask. Sets up the planner almost hands-free — one round of quick popups, then Claude signs into Penn sites with the user, pulls their degree audit, Penn Abroad forms, email and program dates, syncs the calendar and builds the dashboard. Use when me/profile.json is missing or onboarded is false, or the user says "set me up", "get started", or "redo my setup".
+description: Runs first for every new user, before anything else they ask. Guided, mostly automatic setup that assumes nothing is connected yet — one quick popup, then it walks the user through installing Claude in Chrome, connecting Gmail/Calendar and signing in to email, Path@Penn and Penn Abroad (asking permission with Yes/No popups), pulls their audit, forms, email and program dates, syncs the calendar and builds the dashboard. Use when me/profile.json is missing or onboarded is false, or the user says "set me up", "get started", or "redo my setup".
 ---
-# Onboarding — automatic setup
-The user should mostly sit back: answer **one popup round**, sign in when asked, and click a few approvals. Claude does the rest,
-in order, without stopping to chat. Target: 10–15 minutes, about 5 clicks plus sign-ins.
+# Onboarding — guided automatic setup
+Assume the user has **nothing** set up: no Claude in Chrome, no connectors, not signed in to email, Path@Penn or Penn Abroad.
+The user should only answer one popup, click Yes/Done on a few popups, and sign in when asked. Claude does everything else, in
+order, and pushes them toward the recommended choice. Target: 15–20 minutes including installs.
 
-## Principles
-- **Ask everything up front, once.** After the opening popup, never ask anything that a site, email or earlier answer can tell you.
-  Use **AskUserQuestion** popups (≤4 questions, 2–4 options, recommended option first with "(Recommended)"; it adds "Other"
-  and Skip automatically). If that tool isn't available, ask the same as a numbered multiple-choice message.
-- **Keep going.** If a stage fails (not signed in, a site changed, no connector), note it in a "Needs you" list, then continue with
-  the next stage. Never stop the whole setup for one problem.
-- **Show progress, not chatter.** Before each stage, post one line like "Step 3 of 8 — Reading your Path@Penn degree audit…".
-  After it, one line with the result ("✓ Economics major, Consumer Psych minor — 7 requirements left").
-- **Save after every stage** to `me/`, so stopping loses nothing.
-- **Approvals still apply:** sign-ins are the user's (never type passwords; use the password manager if connected), calendar events
-  need one approval, nothing is submitted, sent, booked or deleted.
+## Rules for the whole flow
+- **Popups, not chat.** Use AskUserQuestion for every question. If it isn't available, ask the same thing as a short numbered list.
+- **Permission popups** — whenever you need to do something on the user's behalf (install guidance, opening sites, reading accounts,
+  adding calendar events, scheduling the check-in), ask exactly:
+  question "Do I have your permission to <do X>? (HIGHLY RECOMMENDED)", options **Yes** · **No** (nothing else).
+  On **No**: one line on what they'll miss, add it to a "Needs you" list, continue with the next step. Never re-ask in the same setup.
+- **Check before asking.** If something already works (extension connected, already signed in), skip its permission popup entirely.
+- **Never stop the whole setup** for one failed step: note it in "Needs you" and continue.
+- **Progress lines:** before each step one line ("Step 4 of 10 — Signing you in to Path@Penn…"); after it one result line ("✓ …").
+- **Save after every step** to `me/` so nothing is lost if the user stops. Answers and results only — never passwords, ID numbers.
+- Never type passwords or 2FA codes; the user signs in (or the password manager fills, with their approval). Never submit, send,
+  book or delete anything during setup.
+- Detailed walkthroughs and checks: `references/getting-connected.md`; reading sites: `references/path-at-penn.md`,
+  `references/penn-abroad-portal.md`.
 
-## Step 0 — Create the planner folder (no questions)
-Onboarding starts as soon as the user sends any first message; save that message to `me/pending-request.md` right after this step
-and answer it only after Step 9.
-- **Plugin mode** (running from the plugin): always create a **new, dedicated folder** — `~/Documents/Penn London Planner` — even if
-  a "Study Abroad" or similar folder already exists. Never reuse or write into another existing folder. If that exact path already
-  exists and isn't a planner folder (no `planner-data/profile.json`), use `~/Documents/Penn London Planner 2` (3, …) instead.
-  Ask the app for access to the new folder if needed and work there. Create `planner-data/` inside it, copy `templates/me/*` into it,
-  and write the folder's absolute path as the only line of `~/.penn-london-planner`.
-- **Folder mode** (this repo on the maintainer's Mac): use `me/` in the repo as usual.
-One line to the user: "Created your planner folder: Documents/Penn London Planner."
+## Step 0 — Planner folder and first request (no questions)
+- **Plugin mode:** always create a **new** folder `~/Documents/Penn London Planner` (if that path exists but isn't a planner folder, use
+  "Penn London Planner 2", 3, …). Never reuse another existing folder. Ask the app for access if needed and work there. Create
+  `planner-data/`, copy `templates/me/*` into it, and write the folder's absolute path as the only line of `~/.penn-london-planner`.
+  **Folder mode** (maintainer's repo): use `me/`.
+- Save the user's first message to `me/pending-request.md`; it's answered at the very end.
+- Say: "Welcome! I'll set up your study abroad planner — one quick question round, then I'll walk you through connecting Chrome and
+  your accounts and do the rest myself. Afterwards I'll come back to your question."
 
-## Step 1 — the only questions (one AskUserQuestion call)
-Say first: "I'll ask 4 quick questions, then set everything up myself. You'll just sign in to Penn once and approve a couple of things."
+## Step 1 — The only questions (one AskUserQuestion call)
 | header | question | options |
 |---|---|---|
 | Host school | Where are you studying in London? | Queen Mary · UCL · Goldsmiths · Another London school |
 | Constraints | Anything I should plan around? multiSelect | Back in US before June · Avoid final exams · No constraints |
-| Set up | What should I set up for you? multiSelect | Read Penn sites for me (Recommended) · Scan my email · Sync dates to my calendar · Weekly Monday check-in |
 | Booking | Should I ever book travel for you? | Plan only — I book (Recommended) · Book with my OK each time |
-Save to `me/profile.json` (`host_school`, `preferences.avoid_exam_period`, `back_by` if given, `preferences.features`,
-`preferences.allow_booking`). Term, name, school, major, minor and class year come from Path@Penn/Penn Abroad in later steps.
-If the user picked "Read Penn sites" but Claude in Chrome isn't connected, add it to "Needs you" and fall back to asking those facts in
-one more popup at the end.
+Name, Penn school, majors, minors, class year and term come from Path@Penn / Penn Abroad later — don't ask them.
 
-## Step 2 — Get Chrome ready
-Load the Claude in Chrome tools in one ToolSearch call, open a new tab. If the extension isn't connected, show the install link from
-the tool's error message and mark Steps 3–4 as "Needs you".
+## Step 2 — Claude in Chrome  (getting-connected.md §A)
+Check; if not connected: permission popup "Do I have your permission to walk you through installing Claude in Chrome so I can read
+Penn sites for you? (HIGHLY RECOMMENDED)" → walkthrough → "Done / Skip this" popup → re-check.
 
-## Step 3 — Path@Penn (sign in once)
-Follow `references/path-at-penn.md`. Open path.at.upenn.edu. If the PennKey login page shows:
-use the password manager if connected; otherwise post an AskUserQuestion: "Please sign in to Path@Penn in the Chrome tab I opened
-(and approve Duo). Click when done." options: "I've signed in" · "Skip Penn sites". Then read, without asking:
-- name (first name), Penn school, major(s), minor(s), expected graduation term, advisors (→ `me/contacts.json`)
-- degree audit: every requirement still open, by major / minor / gen-ed (→ `me/requirements.json`, source "Path@Penn audit <date>")
-- current-term registered courses (to know what's in progress)
-Post the result line, e.g. "✓ College · Economics + Consumer Psych minor · Class of 2028 · 7 requirements left".
+## Step 3 — Gmail + Google Calendar connectors  (§B)
+Check; if missing: "Do I have your permission to walk you through connecting your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
+→ walkthrough → Done popup → re-check.
 
-## Step 4 — Penn Abroad portal (same sign-in)
-Follow `references/penn-abroad-portal.md`. Read the program name, term and dates, application status, and every To Do form with
-status and due date → `me/profile.json` (`term`, `penn_abroad_status`) and `me/deadlines.json` (category penn-abroad).
+## Step 4 — Email signed in on Chrome  (§C)
+Check which Google accounts are signed in on Chrome. If the personal (bookings) inbox isn't: "Do I have your permission to open Gmail in
+Chrome so you can sign in to your personal email (where bookings and receipts go)? (HIGHLY RECOMMENDED)" → user signs in → Done popup →
+record addresses in `profile.emails`.
 
-## Step 5 — Email (if picked)
-Run the `inbox-scan` skill on the connected Gmail (and the personal Gmail through Chrome if it's signed in there): host-school
-welcome/countdown emails → `profile.program_dates` and host deadlines (module registration, housing, arrival, orientation, exams);
-ETA/visa approvals → note-only documents; bookings and trip receipts. Add what's needed to `me/deadlines.json`/`tasks.json`.
+## Step 5 — Path@Penn  (§D + path-at-penn.md)
+Check; if not signed in: "Do I have your permission to open Path@Penn so you can sign in, and then read your degree audit for you?
+(HIGHLY RECOMMENDED)" → user signs in + Duo → Done popup → read name, school, majors, minors, grad term, advisors and every requirement
+(in-progress courses count as completed). Result line e.g. "✓ College · Economics + Consumer Psych · Class of 2028 · 6 requirements still needed".
 
-## Step 6 — Host school and courses
-Read `knowledge/institutions/<school>.md` and add its key dates if email didn't have them (as [FACT] with source). Run a quick
-`gen-ed-finder`/`xcat-research` pass: precedents at their school that match any open requirement → note them in
-`me/requirements.json` (`notes`) as [PRECEDENT]s. Don't recommend specific course choices yet — just record the matches.
+## Step 6 — Penn Abroad portal  (§E + penn-abroad-portal.md)
+Usually already signed in after Step 5. Read program, term, dates, application status and every form with its due date.
 
-## Step 7 — Calendar (if picked) — one approval
-Collect every open deadline from today onward. Post one AskUserQuestion:
-"Add N study-abroad dates to your Google Calendar? (reminders 7 days and 1 day before)" options:
-"Add all N (Recommended)" · "Only the next 30 days" · "Skip for now". Then create the events (see `calendar-sync`), saving each
-event id. No further questions.
+## Step 7 — Email scan
+Run `inbox-scan` on the connected inbox and any Chrome-signed-in personal inbox: host-school key dates, ETA/visa approval (note-only),
+bookings, trip receipts, housing. Save to deadlines/tasks/bookings/documents/expenses.
 
-## Step 8 — Weekly check-in (if picked)
-Create a scheduled task (Mondays 8am) from `templates/weekly-checkin-prompt.md` with this folder's absolute path filled in. One line:
-"✓ Weekly check-in set for Mondays 8am (runs when the Claude app is open)."
+## Step 8 — Host school and course matches
+Add the host school's key dates from `knowledge/institutions/<school>.md` if email didn't have them. Run a quick `gen-ed-finder` /
+`xcat-research` pass and record precedents matching open requirements in `me/requirements.json` notes as [PRECEDENT]s.
+No course recommendations yet.
 
-## Step 9 — Finish
+## Step 9 — Calendar sync
+If the calendar connector works: "Do I have your permission to add your N study-abroad dates to your Google Calendar, with reminders a
+week and a day before? (HIGHLY RECOMMENDED)" → on Yes, create all events (see `calendar-sync`), save event ids.
+
+## Step 10 — Weekly check-in
+"Do I have your permission to set up a weekly Monday check-in that scans your email and portal and refreshes your dashboard?
+(HIGHLY RECOMMENDED)" → on Yes, create the scheduled task from `templates/weekly-checkin-prompt.md` with this folder's path; say it runs
+while the Claude app is open.
+
+## Step 11 — Dashboard and wrap-up
 Set `onboarded: true`; run `python3 scripts/check_data.py`; build and publish the dashboard (`dashboard` skill). Then show:
-- one-line profile, the 3 most urgent dates, what was synced, and the **Needs you** list (sign-ins skipped, items to confirm);
-- the dashboard link;
-- then, if `me/pending-request.md` exists, say "Now, back to what you asked:", answer that request fully, and delete the file;
-- otherwise one last AskUserQuestion — "What next?": Plan my courses · Penn Abroad forms · Review my budget · I'm good for now.
+one-line profile · the 3 most urgent dates · what was connected and synced · the **Needs you** list · the dashboard link.
+Finally, if `me/pending-request.md` exists: "Now, back to what you asked:" — answer it fully and delete the file. Otherwise one
+AskUserQuestion "What next?": Plan my courses · Penn Abroad forms · Review my budget · I'm good for now.
