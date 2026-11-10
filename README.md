@@ -10,3 +10,9 @@ New here? Read **[START-HERE.md](START-HERE.md)**.
 | `scripts/` | `qm_module.py` (QMUL module directory), `fx.py`, `expenses.py`, `check_data.py`, `build_dashboard.py` — Python 3 standard library only |
 | `templates/me/` | Blank personal files + schema (`README.md`) |
 | `me/` | Your private data — git-ignored, never shared |
+
+## Web planner
+`web/planner.template.html` + `scripts/build_web.py` → `web/planner.html`, published on claude.ai (the same link for everyone; each
+viewer's data is stored privately per person by claude.ai). After changing `knowledge/` or `data-shared/`, run
+`python3 scripts/build_web.py` and republish `web/planner.html` with the Artifact tool (same file path keeps the link).
+`web/friend-test.html` is a one-minute capability test for new viewers.

@@ -5,6 +5,15 @@ Penn Abroad forms, deadlines, housing, budget, bookings, documents and trips, an
 
 It runs inside the **Claude desktop app** on your own Mac. Your personal data stays on your computer, in a `me/` folder that is never shared.
 
+## Easiest: the web planner (nothing to install)
+Ask Eli to share the **Penn London Planner** page with you on claude.ai, open the link while signed in to Claude, and fill in the
+two-minute setup. You get deadlines, courses and XCAT precedents, budget, documents and a chat that knows the Penn/London rules.
+Your data is private to you. Optional: connect Gmail and Google Calendar in claude.ai → Settings → Connectors so the chat can find
+study-abroad emails and add deadlines to your calendar (it always asks before adding anything).
+
+## Power-user version (runs on your Mac)
+Everything below sets up the full agent folder: adds Penn portal browsing, bank-statement imports and a weekly automatic check-in.
+
 ## One-time setup (about 10 minutes, no GitHub account needed)
 1. **Install the Claude desktop app** (free with your Claude plan): https://claude.ai/download — sign in.
 2. **Install Claude in Chrome** (the browser extension) and sign in with the same Claude account. This lets the agent read

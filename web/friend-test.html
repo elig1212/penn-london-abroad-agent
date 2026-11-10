@@ -1,0 +1,187 @@
+<title>Abroad Planner Test</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column — a short intro, a five-row checklist that fills in live, then a small chat */
+:root {
+  --bg: #f3f5f8; --surface: #ffffff; --ink: #172033; --muted: #5b6579; --line: #d9dee8;
+  --accent: #1f4fd1; --accent-soft: #e4ebfc;
+  --good: #1d7a4c; --good-soft: #e1f3e9; --warn: #a86400; --warn-soft: #fcf0d9; --bad: #b42335; --bad-soft: #fbe3e6;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --f-body: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1420; --surface: #171e2e; --ink: #e7ebf3; --muted: #9aa4b8; --line: #2a3347; --accent: #7d9cff; --accent-soft: #1d2950;
+  --good: #5fcf96; --good-soft: #143224; --warn: #f0b552; --warn-soft: #3a2a10; --bad: #ff7a8a; --bad-soft: #3d1820; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1420; --surface: #171e2e; --ink: #e7ebf3; --muted: #9aa4b8; --line: #2a3347; --accent: #7d9cff; --accent-soft: #1d2950;
+  --good: #5fcf96; --good-soft: #143224; --warn: #f0b552; --warn-soft: #3a2a10; --bad: #ff7a8a; --bad-soft: #3d1820; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--f-body); }
+.wrap { max-width: 720px; margin: 0 auto; padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px }
+h1, h2 { font-family: var(--f-display); margin: 0; text-wrap: balance }
+h1 { font-size: clamp(1.6rem, 5vw, 2.1rem); font-weight: 800 }
+h2 { font-size: 1.05rem; font-weight: 600 }
+p { margin: 0 } .muted { color: var(--muted) }
+section { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 12px; min-width: 0 }
+.check { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line) }
+.check:first-of-type { border-top: 0 }
+.check .what { font-weight: 600 } .check .detail { grid-column: 1 / -1; font-size: .88rem; color: var(--muted) }
+.pill { font: 500 .72rem/1 var(--f-data); padding: 5px 8px; border-radius: 99px; white-space: nowrap; background: var(--accent-soft); color: var(--accent) }
+.pill.good { background: var(--good-soft); color: var(--good) } .pill.warn { background: var(--warn-soft); color: var(--warn) } .pill.bad { background: var(--bad-soft); color: var(--bad) }
+button { font: 600 .92rem var(--f-body); border: 1px solid var(--accent); background: var(--accent); color: var(--surface); border-radius: 8px; padding: 8px 14px; cursor: pointer }
+button.secondary { background: transparent; color: var(--accent) }
+button:disabled { opacity: .5; cursor: default }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.chat { display: grid; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 4px }
+.msg { padding: 10px 12px; border-radius: 10px; white-space: pre-wrap; overflow-wrap: anywhere; min-width: 0 }
+.msg.me { background: var(--accent-soft); justify-self: end; max-width: 85% }
+.msg.bot { background: var(--bg); border: 1px solid var(--line) }
+textarea { width: 100%; font: 1rem var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; resize: vertical; min-height: 64px }
+.note { font-size: .85rem; color: var(--muted) }
+code { font-family: var(--f-data); font-size: .85em }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:6px">
+    <h1>Abroad Planner Test</h1>
+    <p class="muted">A quick check of what this planner can do for you on claude.ai. It takes about a minute. The tests save their pass/fail results so Eli can see them; nothing from your email is shown or saved, and the chat below starts empty.</p>
+  </header>
+
+  <section aria-labelledby="checks-h">
+    <h2 id="checks-h">Checks</h2>
+    <div class="check"><span class="what">Signed in</span><span class="pill" id="s-user">checking…</span><span class="detail" id="d-user">Can the page tell who's using it?</span></div>
+    <div class="check"><span class="what">Account type</span><span class="pill" id="s-guest">checking…</span><span class="detail" id="d-guest">Member of Eli's workspace, or invited guest.</span></div>
+    <div class="check"><span class="what">Private storage</span><span class="pill" id="s-db">checking…</span><span class="detail" id="d-db">Saves a test note only you can read, then reads it back.</span></div>
+    <div class="check"><span class="what">Chat with Claude</span><span class="pill" id="s-chat">not run</span><span class="detail" id="d-chat">Press "Run chat test" — Claude may ask your permission first.</span></div>
+    <div class="check"><span class="what">Your Gmail</span><span class="pill" id="s-gmail">not run</span><span class="detail" id="d-gmail">Press "Run Gmail test" — counts study-abroad emails from the last 90 days. You'll be asked to allow it; your messages are never shown or saved.</span></div>
+    <div class="row">
+      <button id="b-chat" type="button">Run chat test</button>
+      <button id="b-gmail" type="button" class="secondary">Run Gmail test</button>
+    </div>
+    <p class="note" id="saved">Results not saved yet.</p>
+  </section>
+
+  <section aria-labelledby="chat-h">
+    <h2 id="chat-h">Try the planner chat</h2>
+    <p class="note">It knows the shared Penn-in-London notes (XCAT, gen-ed rules, ETA, Queen Mary / UCL / Goldsmiths basics). Try: "Do any Goldsmiths courses have precedent for College Sector 1?"</p>
+    <div class="chat" id="log" aria-live="polite"></div>
+    <form id="f" class="row" style="align-items:stretch">
+      <label for="q" class="note" style="width:100%">Your question</label>
+      <textarea id="q" placeholder="Ask about study abroad credit, entry rules, or your host school"></textarea>
+      <button type="submit" id="send">Ask</button>
+    </form>
+  </section>
+</div>
+
+<script>
+const KNOWLEDGE = `You are the Penn-in-London Study Abroad Planner, helping University of Pennsylvania students spending a semester in London (Queen Mary, UCL, Goldsmiths).
+Rules: label claims [FACT] (with source), [PRECEDENT] (Penn approved before; not a guarantee) or [SUGGESTION]. Never invent dates, rules or course numbers; say "I don't know — check X" instead. Only an XCAT decision confirms Penn credit; advisors can't pre-confirm. You are not a lawyer, doctor or immigration adviser.
+Shared notes (checked 10 Nov 2026):
+- XCAT: request Penn credit for study abroad before taking the course; Econ evaluations take ~2 weeks. Public precedent search: xcat.at.upenn.edu/searchPrecedents.
+- College sectors: abroad credit fills a sector only if posted as a Penn course number that is itself approved for that sector (college.upenn.edu/node/234). Study-abroad catch-all numbers (e.g. HIST 1820, URBS 2984, PSYC 3985) don't. Penn History won't approve abroad courses for sectors.
+- Precedents carrying gen-eds: Goldsmiths PS52003T Social Psychology → PSYC 1440 (Sector 1 Society; Wharton Social Science, NSME), exp 2027-12-17; Goldsmiths SO51010D Imaginative Criminology → SOCI 2920 (Sector 1; Wharton SS), exp 2028-02-03; Goldsmiths MC53040B Strategies of World Cinema → CIMS 1004 (Sector 2; Wharton Humanities), exp 2027-11-30; Goldsmiths CU52033B Mind Projections → CIMS 0021 (Sector 3; Cross Cultural Analysis), exp 2027-11-04; QMUL ESH295 London: Walking the City → URBS 0011 (Sector 1), exp 2027-08-17. QMUL LIN4215 Psychology of Language → PSYC 1310. No QMUL or UCL precedent fills Sector 6 (Physical World).
+- Penn Econ: no credit for business courses (e.g. banking); ECON 4982 study-abroad credit counts as a major elective; ≥6 ECON CU must be taken at Penn.
+- Wharton: business fundamentals and concentration requirements can't be taken abroad; business courses count only at Wharton-approved programs.
+- UK entry: US citizens need an ETA (£20 since 8 Apr 2026; usually decided within a day; valid 2 years or until passport expiry; no work allowed) via gov.uk/eta or the UK ETA app.
+- Queen Mary Spring 2027: module registration closes 17 Nov 2026 15:00 UK; add/drop 19 Jan–5 Feb 2027; teaching 25 Jan–16 Apr; exams 6 May–4 Jun 2027 (must stay for in-person exams).
+- UCL: affiliates can't do Term 2 only; spring students do Terms 2 and 3 (exams in Term 3).
+- Goldsmiths 2026/27: spring/summer term 4 Jan–11 Jun 2027; teaching ends 19 Mar; 60 credits = four 15-credit modules.
+- Health: Penn requires home-country insurance; Penn travellers are International SOS members (register flights in MyTrips). UK emergency 999, urgent advice 111.
+Keep answers short and practical.`;
+
+const $ = (id) => document.getElementById(id);
+const set = (k, cls, label, detail) => { const s = $('s-' + k); s.className = 'pill ' + cls; s.textContent = label; if (detail) $('d-' + k).textContent = detail; };
+const R = { checked: new Date().toISOString(), user: 'pending', guest: null, db: 'pending', chat: 'not run', gmail: 'not run', errors: {} };
+let db = null, me = null;
+
+async function save() {
+  if (!db || !me) return;
+  try { await db.collection('results').doc(me).set({ ...R, checked: new Date().toISOString() }); $('saved').textContent = 'Results saved for Eli.'; }
+  catch (e) { $('saved').textContent = 'Could not save results (' + (e.code || 'error') + '). Send Eli a screenshot of this list instead.'; }
+}
+
+(async () => {
+  const user = await claude.use('user');
+  if (!user) { set('user', 'bad', 'no', 'This page can’t see an account. Open it in claude.ai while signed in.'); R.user = 'none'; set('guest', 'warn', 'unknown'); }
+  else {
+    me = await user.id();
+    if (me) { set('user', 'good', 'yes'); R.user = 'ok'; }
+    else { set('user', 'warn', 'limited', 'Signed in, but the page gets no stable id for you, so it can’t keep your own data.'); R.user = 'no-id'; }
+    try {
+      const ps = me ? await user.profiles([me]) : {};
+      const g = ps[me] ? ps[me].guest : null; R.guest = g;
+      set('guest', g ? 'warn' : 'good', g ? 'guest' : (g === false ? 'member' : 'unknown'),
+        g ? 'You’re an invited guest from outside Eli’s workspace — this is the case we’re testing.' : 'Same workspace as Eli.');
+    } catch (e) { set('guest', 'warn', 'unknown'); }
+  }
+  db = await claude.use('db');
+  if (!db || !me) { set('db', 'bad', 'no', 'Private storage isn’t available in this view.'); R.db = 'unavailable'; }
+  else {
+    try {
+      const ref = db.collection('data/users/' + me).doc('test');
+      const stamp = 'test-' + Date.now();
+      await ref.set({ stamp });
+      const snap = await ref.get();
+      if (snap.exists && snap.data().stamp === stamp) { set('db', 'good', 'works'); R.db = 'ok'; } else { set('db', 'bad', 'failed'); R.db = 'mismatch'; }
+    } catch (e) { set('db', 'bad', 'failed', 'Storage error: ' + (e.code || e.message)); R.db = 'error'; R.errors.db = e.code || String(e.message).slice(0, 80); }
+  }
+  save();
+})();
+
+let sample = null;
+async function getSample() { if (!sample) sample = await claude.use('sample'); return sample; }
+
+$('b-chat').addEventListener('click', async (ev) => {
+  ev.currentTarget.disabled = true; set('chat', '', 'running…');
+  const s = await getSample();
+  if (!s) { set('chat', 'bad', 'no', 'Chat isn’t available for your account on this page.'); R.chat = 'unavailable'; $('b-chat').disabled = false; return save(); }
+  try {
+    const r = await s([{ role: 'user', content: KNOWLEDGE + '\n\nReply with exactly: "Planner chat is working."' }], { cache: false, modelTier: 'quick' });
+    const ok = /working/i.test(r.text); set('chat', ok ? 'good' : 'warn', ok ? 'works' : 'odd reply', ok ? 'Claude answered.' : r.text.slice(0, 120)); R.chat = ok ? 'ok' : 'odd';
+  } catch (e) {
+    const c = e.code || 'error'; R.chat = c; R.errors.chat = c;
+    set('chat', c === 'not_granted' ? 'warn' : 'bad', c === 'not_granted' ? 'declined' : 'failed', c === 'not_granted' ? 'Permission was declined. Reload the page to try again.' : 'Error: ' + c + (e.message ? ' — ' + e.message.slice(0, 100) : ''));
+  }
+  $('b-chat').disabled = false; save();
+});
+
+$('b-gmail').addEventListener('click', async (ev) => {
+  ev.currentTarget.disabled = true; set('gmail', '', 'running…');
+  const mcp = await claude.use('mcp');
+  if (!mcp) { set('gmail', 'bad', 'no', 'Connector access isn’t available for your account on this page.'); R.gmail = 'unavailable'; $('b-gmail').disabled = false; return save(); }
+  try {
+    const res = await mcp.callTool('Gmail', 'search_threads',
+      { query: '("Queen Mary" OR UCL OR Goldsmiths OR "Penn Abroad" OR via-trm.com) newer_than:90d', pageSize: 50, view: 'THREAD_VIEW_IDS_ONLY' });
+    const p = res.payload || res.structuredContent || {};
+    const n = Array.isArray(p.threads) ? p.threads.length : 0;
+    set('gmail', 'good', 'works', `Gmail is reachable — found ${n}${n === 50 ? '+' : ''} study-abroad email threads (content not read).`); R.gmail = 'ok';
+  } catch (e) {
+    const c = e.code || 'error'; R.gmail = c; R.errors.gmail = c;
+    const why = { server_not_connected: 'Connect Gmail in claude.ai → Settings → Connectors, then try again.', not_granted: 'Permission was declined.' }[c] || ('Error: ' + c);
+    set('gmail', c === 'server_not_connected' || c === 'not_granted' ? 'warn' : 'bad', c.replace(/_/g, ' '), why);
+  }
+  $('b-gmail').disabled = false; save();
+});
+
+const history = [];
+function add(role, text) { const d = document.createElement('div'); d.className = 'msg ' + role; d.textContent = text; $('log').append(d); $('log').scrollTop = $('log').scrollHeight; return d; }
+let ctrl = null;
+$('f').addEventListener('submit', async (ev) => {
+  ev.preventDefault(); const q = $('q').value.trim(); if (!q) return;
+  $('q').value = ''; add('me', q); history.push({ role: 'user', content: q });
+  const out = add('bot', 'Thinking…'); $('send').disabled = true;
+  const s = await getSample();
+  if (!s) { out.textContent = 'Chat isn’t available for your account on this page.'; $('send').disabled = false; return; }
+  ctrl?.abort(); ctrl = new AbortController();
+  const msgs = history.map((m, i) => i === 0 ? { role: 'user', content: KNOWLEDGE + '\n\nStudent: ' + m.content } : m);
+  try {
+    const r = await s(msgs, { cache: false, signal: ctrl.signal, onText: ({ text }) => { out.textContent = text; } });
+    out.textContent = r.text; history.push({ role: 'assistant', content: r.text });
+  } catch (e) { out.textContent = 'Couldn’t get an answer (' + (e.code || 'error') + ').'; history.pop(); }
+  $('send').disabled = false;
+});
+</script>
