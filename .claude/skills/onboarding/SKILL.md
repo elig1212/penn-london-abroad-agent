@@ -40,8 +40,8 @@ order, and pushes them toward the recommended choice. Target: 15–20 minutes in
 Name, Penn school, majors, minors, class year and term come from Path@Penn / Penn Abroad later — don't ask them.
 
 ## Step 2 — Claude in Chrome  (getting-connected.md §A)
-Check; if not connected: permission popup "Do I have your permission to walk you through installing Claude in Chrome so I can read
-Penn sites for you? (HIGHLY RECOMMENDED)" → walkthrough → "Done / Skip this" popup → re-check.
+Check; if not connected: permission popup "Do I have your permission to open the Claude in Chrome install page in your
+Chrome browser? (HIGHLY RECOMMENDED)" → open it directly in Chrome (§A) → "Done / Skip this" popup → re-check.
 
 ## Step 3 — Gmail + Google Calendar connectors  (§B)
 Check; if missing: "Do I have your permission to connect your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
