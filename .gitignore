@@ -1,0 +1,5 @@
+# Private per-user data never leaves this machine
+/me/
+.DS_Store
+__pycache__/
+*.pyc
