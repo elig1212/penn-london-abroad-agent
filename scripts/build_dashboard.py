@@ -183,10 +183,15 @@ h += `<section><h2>Courses <small>host → Penn</small></h2><div class="scroll">
   (D.courses || []).map(c => { const [k, l] = xs(c.xcat); return `<tr class="${/DROP/.test(c.verdict || '') ? 'dropped' : ''}"><td class="mono">${esc(c.id)}</td><td>${esc(c.title)}<div class="muted" style="font-size:.8rem">L${esc(c.level)} · ${esc(c.assessment || '')}</div></td><td>${esc(c.penn_equivalent || '—')}</td><td><span class="pill ${k}">${l}</span>${c.xcat?.precedent_expires ? `<div class="muted mono" style="font-size:.72rem">exp ${c.xcat.precedent_expires}</div>` : ''}</td><td>${c.has_exam_in_exam_period ? '<span class="pill bad">yes</span>' : '<span class="pill good">no</span>'}</td><td><span class="pill ${vd(c.verdict || '')}">${esc(c.verdict || c.status)}</span></td></tr>`; }).join('') +
   `</tbody></table></div></section>`;
 
-h += `<section><h2>Degree requirements left <small>Path@Penn</small></h2>` + (D.requirements || []).map(r => {
-  const pct = r.needed_cu ? Math.min(100, 100 * (r.done_cu || 0) / r.needed_cu) : 0;
+const reqDone = r => (r.done_cu || 0) + (r.in_progress_cu || 0);
+const reqMet = r => r.needed_cu ? reqDone(r) >= r.needed_cu : r.status === 'done';
+const reqs = [...(D.requirements || [])].sort((a, b) => reqMet(a) - reqMet(b));
+h += `<section><h2>Degree requirements <small>${reqs.filter(r => !reqMet(r)).length} still needed · in-progress courses count as done</small></h2>` + reqs.map(r => {
+  const met = reqMet(r), pct = r.needed_cu ? Math.min(100, 100 * reqDone(r) / r.needed_cu) : (met ? 100 : 0);
   const plan = (D.courses || []).filter(c => c.penn_requirement === r.id && !/DROP|UNLIKELY/.test(c.verdict || '')).map(c => c.id);
-  return `<div class="req"><div><div>${esc(r.name)}</div><div class="muted" style="font-size:.82rem">${plan.length ? 'Planned abroad: ' + plan.join(', ') : esc(r.notes || '')}</div></div><span class="pill ${plan.length ? 'good' : 'plain'}">${r.program}</span><div class="bar" style="grid-column:1/-1"><i style="width:${pct}%"></i></div></div>`;
+  const pill = met ? `<span class="pill good">${r.in_progress_cu ? 'done · in progress' : 'done'}</span>` : `<span class="pill ${plan.length ? 'good' : 'plain'}">${esc(r.program)}</span>`;
+  const sub = (r.satisfied_by || []).length ? 'Covered by: ' + r.satisfied_by.join(', ') : plan.length ? 'Planned abroad: ' + plan.join(', ') : (r.notes || '');
+  return `<div class="req"><div><div>${esc(r.name)}</div><div class="muted" style="font-size:.82rem">${esc(sub)}</div></div>${pill}<div class="bar" style="grid-column:1/-1"><i style="width:${pct}%;${met ? 'background:var(--good)' : ''}"></i></div></div>`;
 }).join('') + `</section></div><div class="col">`;
 
 // timeline
