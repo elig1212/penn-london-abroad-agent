@@ -73,5 +73,5 @@ Schemas are documented in `templates/me/README.md`. After changing any of them, 
 - End substantive answers with "Next steps" only when there are real ones; add them to `me/tasks.json` if the user agrees.
 
 ## Skills (read the matching one before acting)
-onboarding · course-planner · xcat-research · penn-abroad-portal · inbox-scan · documents · budget · calendar-sync ·
+onboarding · course-planner · xcat-research · gen-ed-finder · penn-abroad-portal · inbox-scan · documents · budget · calendar-sync ·
 housing-and-london · trip-planner · health-and-insurance · during-program · return-and-reconcile · dashboard · update-agent
