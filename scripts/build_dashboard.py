@@ -147,7 +147,7 @@ let h = `<header>
     <div><span>Due in 14 days</span><b>${soon.length}</b></div>
     <div><span>Open tasks</span><b>${todo.length}</b></div>
     <div><span>${arrive ? 'Arrive by' : 'Arrival'}</span><b>${arrive ? (diff(arrive) >= 0 ? diff(arrive) + 'd' : 'arrived') : '—'}</b></div>
-    <div><span>Modules kept</span><b>${kept.length}<small class="muted" style="font-size:.9rem"> / 4</small></b></div>
+    <div><span>Modules kept</span><b>${kept.length}</b></div>
     <div><span>Spent so far</span><b>${usd(spent)}</b></div>
   </div></header>`;
 
