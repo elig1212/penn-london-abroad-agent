@@ -12,7 +12,7 @@ It runs inside the **Claude desktop app** on your own Mac. Your personal data st
 3. **Make a free GitHub account** (https://github.com/signup) and send your username to the person who shared this with you.
    Accept the email invite to the private repository.
 4. In the Claude desktop app, open the **Code** tab, start a new session in any folder, and paste:
-   > Set up the Penn-in-London study abroad agent for me. Clone the private GitHub repo `<OWNER>/<REPO>` into a folder
+   > Set up the Penn-in-London study abroad agent for me. Clone the private GitHub repo `elig1212/penn-london-abroad-agent` into a folder
    > called AI_Agent_Abroad in my home folder, move this session there, and run onboarding.
    Approve the prompts it shows you (it may install the GitHub tool and ask you to sign in to GitHub in your browser).
 5. Answer the onboarding questions. Skip anything you don't know yet.
