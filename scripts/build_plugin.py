@@ -82,6 +82,14 @@ def build(version):
                                 "create `planner-data/` in the user's Study Abroad folder and copy `" + PR + "/templates/me/*` into it")
         os.makedirs(os.path.join(sk, name))
         open(os.path.join(sk, name, "SKILL.md"), "w").write(re.sub(r"(?<![\w/.-])me/", "planner-data/", src[:fm_end]) + "\nRead the **study-abroad-planner** skill first for the core rules.\n" + body)
+        sdir = os.path.join(ROOT, ".claude", "skills", name)
+        for dp, _, fs in os.walk(sdir):
+            for f in fs:
+                if dp == sdir and f == "SKILL.md": continue
+                src_f = os.path.join(dp, f); dst_f = os.path.join(sk, name, os.path.relpath(src_f, sdir))
+                os.makedirs(os.path.dirname(dst_f), exist_ok=True)
+                if f.endswith(".md"): open(dst_f, "w").write(rewrite(open(src_f).read()))
+                else: shutil.copy2(src_f, dst_f)
     os.makedirs(os.path.join(sk, "plugin-updates"))
     open(os.path.join(sk, "plugin-updates", "SKILL.md"), "w").write(PLUGIN_UPDATES)
     for d in ("knowledge", "data-shared", "templates"):
