@@ -44,8 +44,8 @@ Check; if not connected: permission popup "Do I have your permission to walk you
 Penn sites for you? (HIGHLY RECOMMENDED)" → walkthrough → "Done / Skip this" popup → re-check.
 
 ## Step 3 — Gmail + Google Calendar connectors  (§B)
-Check; if missing: "Do I have your permission to walk you through connecting your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
-→ walkthrough → Done popup → re-check.
+Check; if missing: "Do I have your permission to connect your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
+→ show the one-click Connect card (§B) → Done popup → re-check.
 
 ## Step 4 — Email signed in on Chrome  (§C)
 Check which Google accounts are signed in on Chrome. If the personal (bookings) inbox isn't: "Do I have your permission to open Gmail in

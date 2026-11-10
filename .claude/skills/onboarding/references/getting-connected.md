@@ -24,12 +24,20 @@ fall back to asking the user in chat).
 
 ## B. Gmail + Google Calendar connectors (needed for email scans and calendar sync)
 Check: ToolSearch for Gmail (search_threads) and Google Calendar (list_calendars). Call `list_calendars` (read-only) to confirm.
-Permission: "Do I have your permission to walk you through connecting your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
-Walkthrough:
-1. In the Claude app: Settings → Connectors (or "Customize" → Connectors).
-2. Find **Gmail** → Connect → choose the Google account that gets Penn Abroad and host-school mail (usually their Penn email) → Allow.
-3. Do the same for **Google Calendar** with the calendar they actually use.
-Done popup → re-check. Note: the connector links one Google account; a second (personal) inbox is read through Chrome in step C.
+Permission: "Do I have your permission to connect your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
+**Preferred — one-click Connect card (tested 2026-11-10):**
+1. Load the registry tools: ToolSearch "select:mcp__mcp-registry__search_mcp_registry,mcp__mcp-registry__suggest_connectors".
+2. `search_mcp_registry` with keywords ["gmail", "google calendar"] → take the `directoryUuid` of the results named exactly
+   "Gmail" and "Google Calendar" (at last check: Gmail 2701e52f-b826-4aaf-8b25-11f2a97c98b0, Google Calendar
+   2a838eaa-f7b4-4bc2-bd47-c326f3c813c5 — always use the search result, not these, if they differ). Skip any that show `connected: true`.
+3. `suggest_connectors` with those uuids and keywords ["study abroad"]. The app shows a card with a **Connect** button for each.
+4. Tell the user in one line: "Click **Connect** on Gmail and Google Calendar, and pick the Google account that gets your Penn Abroad
+   and host-school email (usually your Penn email)."
+5. Done popup ("Done" · "Skip this") → re-check with `list_calendars` and a 1-result Gmail search. If a connector still isn't available,
+   the app may need a new message or a restart to load it — say so, and continue setup (email/calendar steps go to "Needs you").
+**Fallback (no registry tools in this app):** Claude app → Settings → Connectors → Gmail → Connect → choose the Penn Google account →
+Allow; same for Google Calendar. Then the Done popup.
+Note: the connector links one Google account; a second (personal) inbox is read through Chrome in step C.
 
 ## C. Email signed in on Chrome (personal inbox, and Penn inbox if not connected in B)
 Check: navigate a Chrome tab to `https://mail.google.com/mail/u/0/` and read the page title ("Inbox … - <address> - Gmail").
