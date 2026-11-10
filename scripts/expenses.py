@@ -8,7 +8,8 @@ import argparse, csv, os, re, sys, datetime, collections
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fx import to_usd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LEDGER = os.path.join(ROOT, "me", "expenses.csv")
+from _paths import data_dir
+LEDGER = os.path.join(data_dir(), "expenses.csv")
 FIELDS = "date,description,category,amount,currency,usd,fx_rate,fx_date,source,ref".split(",")
 CATS = {"food": r"tesco|sainsbury|pret|deliveroo|uber eats|restaurant|cafe|coffee|lidl|aldi|co-op|waitrose|m&s|starbucks",
         "transport": r"tfl|oyster|uber|bolt|national rail|trainline|lime|bus",

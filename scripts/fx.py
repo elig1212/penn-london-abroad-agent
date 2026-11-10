@@ -4,7 +4,9 @@ Usage: python3 scripts/fx.py 12.40 GBP 2027-01-20   -> prints USD amount and rat
 """
 import json, os, sys, urllib.request, datetime
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CACHE = os.path.join(ROOT, "me", ".fx-cache.json")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import data_dir
+CACHE = os.path.join(data_dir(), ".fx-cache.json")
 
 def _load():
     try: return json.load(open(CACHE))

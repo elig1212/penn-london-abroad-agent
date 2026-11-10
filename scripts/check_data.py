@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Validate me/ files: JSON parses, required fields, dates, duplicate ids, and timetable clashes among registered courses."""
 import json, os, re, sys, csv
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); ME = os.path.join(ROOT, "me")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import data_dir
+ME = data_dir()
 REQ = {"requirements.json": ["id", "name"], "courses.json": ["id", "title", "status"], "deadlines.json": ["id", "date", "title"],
        "tasks.json": ["id", "title", "status"], "bookings.json": ["id", "type"], "documents.json": ["id", "kind"], "contacts.json": ["id", "name"]}
 problems = []

@@ -16,7 +16,9 @@ Use it for: an old planner artifact's data, a spreadsheet export, a Path@Penn "p
 import argparse, csv, datetime, json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ME = os.path.join(ROOT, "me")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import data_dir
+ME = data_dir()
 KEYS = {"code": ["code", "course", "course_code", "module", "module_code"], "title": ["title", "name", "course_title"],
         "term": ["term", "semester"], "place": ["place", "school", "institution", "where"],
         "counts_as": ["counts_as", "requirement", "fulfills", "counts", "penn_requirement"],

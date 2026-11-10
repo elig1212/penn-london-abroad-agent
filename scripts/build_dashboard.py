@@ -5,7 +5,9 @@ Usage: python3 scripts/build_dashboard.py [--today YYYY-MM-DD]
 import csv, datetime, json, os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ME = os.path.join(ROOT, "me")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import data_dir
+ME = data_dir()
 
 
 def load(name, default):

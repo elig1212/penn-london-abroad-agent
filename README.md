@@ -16,3 +16,9 @@ New here? Read **[START-HERE.md](START-HERE.md)**.
 viewer's data is stored privately per person by claude.ai). After changing `knowledge/` or `data-shared/`, run
 `python3 scripts/build_web.py` and republish `web/planner.html` with the Artifact tool (same file path keeps the link).
 `web/friend-test.html` is a one-minute capability test for new viewers.
+
+## Claude plugin (recommended for friends)
+`python3 scripts/build_plugin.py [version]` builds `dist/penn-london-planner.plugin` from this repo: the core rules
+(`plugin-src/core/SKILL.md`), every skill in `.claude/skills/` (paths rewritten for plugin mode), `knowledge/`, `data-shared/`,
+`scripts/` and `templates/`. In plugin mode each user's data lives in `planner-data/` inside their own "Study Abroad" folder
+(scripts find it via `scripts/_paths.py`). Bump the version and send friends the new file after changing the shared core.
