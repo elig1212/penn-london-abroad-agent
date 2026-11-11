@@ -21,10 +21,14 @@ Read-only. Never register, drop or change anything.
    Tool output is ~1,000 characters per call: read `window._r` in slices (`window._r.slice(950,1900)` …).
    In the text, items marked "completed" are done, "registered" = in progress this term, "partially completed" = still open;
    lines like "12 CU are required. You currently have 6" give totals; "Choose one course with attribute AUPW" names a gen-ed attribute.
-6. **In-progress ("registered") courses count as completed.** For every requirement, write it to `me/requirements.json`:
+6. **Record every requirement — completed ones too.** Every row in the audit (major, minor, each gen-ed sector and foundation, minimum
+   credits/GPA rules) becomes one record, even if it's fully done years ago; `satisfied_by` lists the courses that filled it (e.g.
+   `["MATH 1400", "MATH 1410"]`, `["PSYC 0001 (by exemption)"]`). The dashboard shows completed requirements with their courses so
+   the student sees their whole degree, not just what's left.
+7. **In-progress ("registered") courses count as completed.** For every requirement, write it to `me/requirements.json`:
    `{id, program: major|minor|gen-ed, name, needed_cu, done_cu, in_progress_cu, satisfied_by: ["ECON 2100", "ECON 2300 (in progress)"],
    notes, source: "Path@Penn audit <date>"}` — `done_cu` = completed, `in_progress_cu` = currently enrolled at Penn this term. Courses planned or taken abroad never count here until the credit is posted. A requirement whose
    completed + in-progress credits cover it is treated as **satisfied** (dashboards show it done, labelled "in progress"). Only
-   requirements still short after counting in-progress courses are "still needed". Also save major/minor/school/grad term to the
+   requirements still short after counting in-progress courses are "still needed". Courses planned abroad never count until credited. Also save major/minor/school/grad term to the
    profile and advisors to `me/contacts.json` (`role`, `email`, `when_to_use`).
 Wharton/SEAS/Nursing audits use different row names — read whatever rows appear the same way.

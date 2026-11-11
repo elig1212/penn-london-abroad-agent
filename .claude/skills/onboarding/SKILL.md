@@ -86,8 +86,8 @@ in; if not, the user signs in → Done popup. Only confirm the page titles show 
 # Phase C — Collect everything (user waits)
 Say: "You're all signed in — thank you! Please hold while I collect your information and build your dashboard. This takes about
 5–10 minutes; you don't need to do anything." Then run without questions, one progress line each:
-1. **Path@Penn** (path-at-penn.md): name, school, majors, minors, grad term, advisors, every requirement grouped by major / minor /
-   gen-ed (in-progress courses count as completed).
+1. **Path@Penn** (path-at-penn.md): name, school, majors, minors, grad term, advisors, every requirement — completed ones included, with the
+   courses that filled them — grouped by major / minor / gen-ed (current Penn courses count as completed).
 2. **Penn Abroad portal** (penn-abroad-portal.md): program, term, dates, status, every form and due date.
 3. **Email** (`inbox-scan`, both inboxes): host-school key dates, ETA/visa approval (note-only), bookings — **apply the booking rules
    (cancellations/changes, final price)** — trip receipts, housing.
