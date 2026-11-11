@@ -42,13 +42,33 @@ Permission: "Do I have your permission to connect your Penn Gmail and Google Cal
 Allow; same for Google Calendar. Then the Done popup.
 Note: the connector links one Google account; a second (personal) inbox is read through Chrome in step C.
 
-## C. Email signed in on Chrome (personal inbox, and Penn inbox if not connected in B)
-Check: navigate a Chrome tab to `https://mail.google.com/mail/u/0/` and read the page title ("Inbox … - <address> - Gmail").
-Try `/u/1/`, `/u/2/` to list signed-in accounts. Signed-in sign-in pages show "Sign in – Google Accounts".
-Permission: "Do I have your permission to open Gmail in Chrome so you can sign in to your personal email (where bookings and receipts go)? (HIGHLY RECOMMENDED)"
-Walkthrough: open accounts.google.com in the Chrome tab → the user signs in (they type; never you) → for a second account:
-profile picture → "Add another account". Done popup → re-check titles and record which `/u/<n>/` is which address in
-`profile.emails` (addresses only).
+## C. Both email accounts signed in on Chrome (school + personal)
+**Why (say this once, briefly):** "Claude reads your email through Chrome, so Chrome needs to be signed in to **both** your school email
+and your personal email — that's how I find your Penn Abroad and host-school dates, bookings and receipts to build your dashboard and
+answer your questions. Any Chrome profile is fine, as long as it's the one where Claude in Chrome is installed."
+
+**C1 — Ask for the two addresses** (onboarding Step 1b; one AskUserQuestion call, two questions). The user types each address into the
+popup's "Other" box:
+| header | question | options |
+|---|---|---|
+| School email | What's your school email address? Type it in "Other". | "It's my Penn Gmail" · "I don't have one" |
+| Personal email | What's your personal email address? Type it in "Other". | "I'll skip this" · "Same as my school email" |
+(If they pick an option instead of typing, ask once more in chat for the address, or mark it skipped.) Save to
+`profile.emails = {school, personal}` — addresses only. Don't remind them to check spelling; a typo just fails at sign-in.
+
+**C2 — Check what's already signed in:** navigate a tab to `https://mail.google.com/mail/u/0/` and read the title
+("Inbox … - <address> - Gmail"); repeat for `/u/1/`, `/u/2/`. Any address already signed in → skip it.
+
+**C3 — Sign in, one tab per address** (only for addresses not yet signed in). Permission popup:
+"Do I have your permission to open Gmail sign-in in Chrome and fill in your email addresses, so you just enter your passwords?
+(HIGHLY RECOMMENDED)" — Yes · No. On Yes, for each missing address, in its **own new tab**:
+1. Navigate to `https://accounts.google.com/AddSession?continue=https://mail.google.com/mail/` (adds an account without signing out
+   any other). Never put the email address in a URL.
+2. Find the "Email or phone" field, type the address (`form_input` or click + type), then click **Next**.
+3. Stop there. Say: "Enter your password in this tab (and approve 2-step verification). For your Penn email you'll be sent to PennKey
+   sign-in — sign in there." **Never type passwords or codes.**
+Then one Done popup for both tabs ("Done" · "Skip this") → re-check `/u/0/`, `/u/1/`, … titles, and record which `/u/<n>/` belongs to
+which address in `profile.emails.chrome_index`. Any still missing → "Needs you".
 
 ## D. Path@Penn (PennKey)
 Check: navigate to `https://path.at.upenn.edu`; title "Path@Penn" = signed in; "Penn WebLogin" / duosecurity = not signed in.

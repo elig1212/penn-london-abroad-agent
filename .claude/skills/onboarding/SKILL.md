@@ -39,18 +39,24 @@ order, and pushes them toward the recommended choice. Target: 15–20 minutes in
 | Booking | Should I ever book travel for you? | Plan only — I book (Recommended) · Book with my OK each time |
 Name, Penn school, majors, minors, class year and term come from Path@Penn / Penn Abroad later — don't ask them.
 
+## Step 1b — Your two email addresses (one AskUserQuestion call; getting-connected.md §C1)
+First, one short line on why: Chrome must be signed in to **both** your school and personal email (in the Chrome profile where Claude
+in Chrome is installed — any profile works) so Claude can find your study-abroad dates, bookings and receipts, build your dashboard and
+answer your questions. Then the popup asking for the school and personal addresses (typed in "Other"). Save to `profile.emails`.
+
 ## Step 2 — Claude in Chrome  (getting-connected.md §A)
 Check; if not connected: permission popup "Do I have your permission to open the Claude in Chrome install page in your
 Chrome browser? (HIGHLY RECOMMENDED)" → open it directly in Chrome (§A) → "Done / Skip this" popup → re-check.
 
 ## Step 3 — Gmail + Google Calendar connectors  (§B)
 Check; if missing: "Do I have your permission to connect your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
-→ show the one-click Connect card (§B) → Done popup → re-check.
+→ show the one-click Connect card (§B), telling them to choose their school address (from Step 1b) → Done popup → re-check.
 
-## Step 4 — Email signed in on Chrome  (§C)
-Check which Google accounts are signed in on Chrome. If the personal (bookings) inbox isn't: "Do I have your permission to open Gmail in
-Chrome so you can sign in to your personal email (where bookings and receipts go)? (HIGHLY RECOMMENDED)" → user signs in → Done popup →
-record addresses in `profile.emails`.
+## Step 4 — Sign Chrome in to both email accounts  (§C2–C3)
+Check which addresses are already signed in on Chrome; skip those. For the rest: "Do I have your permission to open Gmail sign-in in
+Chrome and fill in your email addresses, so you just enter your passwords? (HIGHLY RECOMMENDED)" → one new tab per address, Claude
+types the address and clicks Next (never passwords) → user enters password / PennKey + 2-step → one Done popup → re-check and record
+which Gmail account number is which address.
 
 ## Step 5 — Path@Penn  (§D + path-at-penn.md)
 Check; if not signed in: "Do I have your permission to open Path@Penn so you can sign in, and then read your degree audit for you?
