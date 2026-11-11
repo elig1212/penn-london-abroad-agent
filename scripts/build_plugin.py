@@ -70,7 +70,7 @@ def build(version):
     sk = os.path.join(OUT, "skills"); os.makedirs(sk)
     shutil.copytree(os.path.join(ROOT, "plugin-src", "core"), os.path.join(sk, "study-abroad-planner"))
     for name in sorted(os.listdir(os.path.join(ROOT, ".claude", "skills"))):
-        if name == "update-agent": continue
+        if name in ("update-agent", "reset-onboarding"): continue  # maintainer-only skills
         src = open(os.path.join(ROOT, ".claude", "skills", name, "SKILL.md")).read()
         fm_end = src.index("---", 3) + 3
         body = rewrite(src[fm_end:])
