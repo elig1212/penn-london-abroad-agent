@@ -3,8 +3,9 @@ name: calendar-sync
 description: Sync key dates from me/deadlines.json (and class times from me/courses.json) to Google Calendar. Use for "put my deadlines in my calendar", "sync calendar".
 ---
 # Calendar sync
-- Target: the user's Google Calendar via the calendar tools (`list_calendars` → pick the user's own calendar, e.g. their Penn or
-  personal one; ask the first time and store in `profile.preferences.calendar_id`). Tested 2026-11-10: create + delete works.
+- Target: whichever Google account the Calendar connector is connected to — never ask the user to reconnect or switch it. Use
+  `list_calendars` → pick the user's own calendar there; ask the first time and store in `profile.preferences.calendar_id`. No Calendar
+  connector → offer (with permission) to add events in Google Calendar through Chrome. Tested 2026-11-10: create + delete works.
 - Event format: summary "[Abroad] <title>", `notificationLevel: NONE`, `overrideReminders` popup 10080 min (7 days) + 1440 min (1 day).
   All-day for date-only deadlines (`allDay: true`). UK-time deadlines: pass `timeZone: "Europe/London"` with the local UK time.
 - For each open deadline without `calendar_event_id`: propose the list of events first (title "[Abroad] …", date, time + tz,

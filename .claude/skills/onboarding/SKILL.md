@@ -61,11 +61,11 @@ with the same account you use in this app." → Done popup → re-check. This st
 don't mention Gmail here.
 
 ## Step 4 — Gmail + Google Calendar connectors  (§B) — only after Step 3 is done
-Say clearly first: "Next we connect Gmail and Google Calendar. When Google asks which account to use, choose your **school** email
-(<school email>) — even if your Claude account uses a different email. That's the inbox and calendar your Penn and study-abroad
-messages go to." Then "Do I have your permission to connect your school Gmail and Google Calendar? (HIGHLY RECOMMENDED)" → Connect card
-→ Done popup → re-check, and confirm the connected Gmail is the school address (one search; compare the recipient address). If it's
-the wrong account, explain how to disconnect and reconnect with the school address.
+**If a connector is already connected (to any account), leave it as it is** — don't ask to reconnect or switch accounts. Just note which
+account it reaches; any inbox it doesn't cover is read through Chrome. For connectors not yet connected, say clearly first: "Next we
+connect Gmail and Google Calendar. When Google asks which account to use, choose your **school** email (<school email>) — even if your
+Claude account uses a different email." Then "Do I have your permission to connect your school Gmail and Google Calendar? (HIGHLY
+RECOMMENDED)" → Connect card for the missing ones only → Done popup → record which account each reached and accept it.
 
 ## Step 5 — Both email accounts signed in on Chrome  (§C2–C3)
 Skip addresses already signed in. Otherwise: "Do I have your permission to open Gmail sign-in in Chrome and fill in your email
@@ -89,7 +89,7 @@ Say: "You're all signed in — thank you! Please hold while I collect your infor
 1. **Path@Penn** (path-at-penn.md): name, school, majors, minors, grad term, advisors, every requirement — completed ones included, with the
    courses that filled them — grouped by major / minor / gen-ed (current Penn courses count as completed).
 2. **Penn Abroad portal** (penn-abroad-portal.md): program, term, dates, status, every form and due date.
-3. **Email** (`inbox-scan`, both inboxes): host-school key dates, ETA/visa approval (note-only), bookings — **apply the booking rules
+3. **Email** (`inbox-scan`, both inboxes — the connector for the account it's connected to, Chrome for the other): host-school key dates, ETA/visa approval (note-only), bookings — **apply the booking rules
    (cancellations/changes, final price)** — trip receipts, housing.
 4. **Host school** (`knowledge/institutions/<school>.md`): key dates email didn't have; quick `gen-ed-finder` / `xcat-research` pass,
    recording precedents that match open requirements as [PRECEDENT] notes. No course recommendations yet.

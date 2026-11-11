@@ -3,7 +3,9 @@ name: inbox-scan
 description: Scan the user's inboxes for deadlines, Penn/host-school updates, bookings, receipts and documents, and update me/ files. Use for "check my email", "what's new", "track my bookings", or a weekly sweep.
 ---
 # Inbox scan
-Sources: the connected Gmail (Gmail tools) and any second inbox through Chrome (user signs in; read-only).
+Sources: the Gmail connector reads **only the account it's connected to** (`profile.emails.connector_gmail`; check with one
+`search_threads` if unknown). Read every other inbox — school or personal — through Claude in Chrome (read-only). Never ask the user to
+change which account the connector uses.
 Track the last scan date in `me/profile.json → last_inbox_scan`; search `after:` that date.
 
 Queries (adapt): host school (`from:qmul.ac.uk` etc.), Penn Abroad (`from:via-trm.com OR goabroad@upenn.edu`),

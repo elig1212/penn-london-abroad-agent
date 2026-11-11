@@ -30,8 +30,18 @@ Done popup → re-check tabs_context_mcp. If it still fails, add to "Needs you" 
 fall back to asking the user in chat).
 
 ## B. Gmail + Google Calendar connectors (needed for email scans and calendar sync)
-Check: ToolSearch for Gmail (search_threads) and Google Calendar (list_calendars). Call `list_calendars` (read-only) to confirm.
-Only after §A is finished (the extension is installed and signed in to Claude). Before the permission popup, say clearly:
+Only after §A is finished (the extension is installed and signed in to Claude).
+
+**Rule: never touch a connector that's already set up.** If Gmail or Google Calendar is already connected — to the school account,
+the personal account or any other — leave it exactly as it is. Don't ask the user to disconnect, reconnect or switch accounts, and
+don't show a Connect card for it. Just find out which account it reaches and route around it (see "Which account" below).
+
+**Check (silent):** ToolSearch for Gmail (`search_threads`) and Google Calendar (`list_calendars`).
+- **Which account (Gmail):** run one `search_threads` with `pageSize: 1` and read the address in the result (`viewUrl` contains
+  `authuser=<address>`, or the recipient address). Save it to `profile.emails.connector_gmail`.
+- **Which account (Calendar):** `list_calendars` → the primary calendar's id is its address. Save to `profile.emails.connector_calendar`.
+
+**Only for connectors that are NOT connected yet:** before the permission popup, say clearly:
 "Next we connect Gmail and Google Calendar. When Google asks which account to use, choose your **school** email (<school email>) —
 even if your Claude account uses a different email."
 Permission: "Do I have your permission to connect your school Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
@@ -39,17 +49,22 @@ Permission: "Do I have your permission to connect your school Gmail and Google C
 1. Load the registry tools: ToolSearch "select:mcp__mcp-registry__search_mcp_registry,mcp__mcp-registry__suggest_connectors".
 2. `search_mcp_registry` with keywords ["gmail", "google calendar"] → take the `directoryUuid` of the results named exactly
    "Gmail" and "Google Calendar" (at last check: Gmail 2701e52f-b826-4aaf-8b25-11f2a97c98b0, Google Calendar
-   2a838eaa-f7b4-4bc2-bd47-c326f3c813c5 — always use the search result, not these, if they differ). Skip any that show `connected: true`.
-3. `suggest_connectors` with those uuids and keywords ["study abroad"]. The app shows a card with a **Connect** button for each.
+   2a838eaa-f7b4-4bc2-bd47-c326f3c813c5 — always use the search result, not these, if they differ). **Skip any that show
+   `connected: true`.**
+3. `suggest_connectors` with the remaining uuids and keywords ["study abroad"]. The app shows a card with a **Connect** button for each.
 4. Tell the user: "Click **Connect** on Gmail, and when Google shows its account list, pick **<school email>**. Then do the same for
    Google Calendar."
-5. Done popup ("Done" · "Skip this") → re-check with `list_calendars` and a 1-result Gmail search, and confirm the Gmail connector is the
-   school account (the result's recipient/viewUrl shows the address). Wrong account → explain: Settings → Connectors → Gmail →
-   Disconnect, then Connect again and pick the school address. If a connector still isn't available,
-   the app may need a new message or a restart to load it — say so, and continue setup (email/calendar steps go to "Needs you").
-**Fallback (no registry tools in this app):** Claude app → Settings → Connectors → Gmail → Connect → choose the Penn Google account →
+5. Done popup ("Done" · "Skip this") → re-check and record which account each one reached (as above). Whatever account they picked,
+   accept it — don't ask them to redo it. If a connector still isn't available, the app may need a new message or a restart to load
+   it — say so, and continue setup.
+**Fallback (no registry tools in this app):** Claude app → Settings → Connectors → Gmail → Connect → choose the school Google account →
 Allow; same for Google Calendar. Then the Done popup.
-Note: the connector links one Google account; a second (personal) inbox is read through Chrome in step C.
+
+**Routing after this step (used by every later step and skill):**
+- The connector covers only the account it's connected to. **Every other inbox — including the school inbox if the connector is on the
+  personal account — is read through Claude in Chrome** (§C makes sure Chrome is signed in to both).
+- Calendar events go to whichever calendar the Calendar connector reaches; if there's no Calendar connector, offer to add events through
+  Google Calendar in Chrome (still with permission).
 
 ## C. Both email accounts signed in on Chrome (school + personal)
 **Why (say this once, briefly):** "Claude reads your email through Chrome, so Chrome needs to be signed in to **both** your school email
