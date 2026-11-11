@@ -37,6 +37,8 @@ If there are several candidates and it's unclear which, show them in one popup a
 
 ## Step 3: Disconnect the Gmail and Google Calendar connectors (core)
 These are account-level claude.ai connectors. Turning them off for this session only (`set_session_connector_enabled`) is **not** enough.
+0. Check first: `search_mcp_registry` ["gmail", "google calendar"]. If both "Gmail" and "Google Calendar" show `connected: false`, this step is
+   already done (✓) and you can skip it.
 1. Load the Claude in Chrome tools in one ToolSearch call:
    `select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__tabs_create_mcp,mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__find,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__read_page,mcp__claude-in-chrome__get_page_text`
    then `tabs_context_mcp` and open a **new** tab.
@@ -54,6 +56,8 @@ These are account-level claude.ai connectors. Turning them off for this session 
 2. Navigate to `https://accounts.google.com/Logout`. This signs out **every** Google account in that Chrome profile, which is what a clean
    onboarding test needs. It does **not** turn off Chrome sync or remove the Chrome profile.
 3. Re-check `https://mail.google.com/mail/u/0/`: it should land on a Google sign-in / account chooser page, not an inbox.
+   **If Claude in Chrome isn't connected:** run `open -a "Google Chrome" "https://accounts.google.com/Logout"`, wait a few seconds, then
+   `open -a "Google Chrome" "https://mail.google.com/mail/u/0/"` and ask in one popup whether that tab shows a sign-in page or an inbox.
 4. Optional cleanup: the account chooser may still list the accounts as "Signed out". That doesn't affect onboarding (its check reads the
    inbox titles). Only remove them if the user asked: on `https://accounts.google.com/AccountChooser` → "Remove an account".
 5. If the Chrome profile itself is signed in to Google with sync on (avatar at top-right shows "Sync is on"), say so in "Still to do by hand"
@@ -62,6 +66,7 @@ These are account-level claude.ai connectors. Turning them off for this session 
 ## Step 5: Remove Claude in Chrome (core; always last)
 Extension pages (`chrome://…`) can't be driven by the extension itself, and computer use only gets read access to Chrome, so the user
 clicks **Remove**. Claude opens the right page for them.
+If the manifest search in step 1 finds nothing, the extension is already gone (✓): skip this step.
 1. Find the extension id (don't guess): look for the manifest whose `"name"` contains "Claude" in
    `~/Library/Application Support/Google/Chrome/*/Extensions/*/*/manifest.json`
    (`grep -l '"name": *"Claude' …`; the id is the folder name after `Extensions/`). At last check it was
