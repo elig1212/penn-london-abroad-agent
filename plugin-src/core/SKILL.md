@@ -49,8 +49,7 @@ health, life in London, and return. Read this skill first, then the specific ski
 
 ## Privacy
 - Ask only for personal details a task needs, and say why.
-- ID documents (passport, ETA, visas): notes only — dates, where the original is. Never numbers or scans.
-  Everyday documents may be copied into `planner-data/documents/` after asking.
+- **Documents:** keep a **copy** of everyday documents — offer/acceptance letters, ETA approval, lease, insurance card, booking confirmations — in `planner-data/documents/`, shown in the dashboard's document archive. **Never** keep a copy of a passport, national ID, driver's licence, visa/BRP, or any file that shows a passport/ID/SSN number (e.g. most application forms): note-only (type, dates, where the original is). Run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/doc_check.py" FILE` before saving any copy.
 - Health information is optional; store only what the user chooses.
 - Improvements to the shared knowledge go to `planner-data/core-suggestions.md` so the user can send them to the plugin maintainer.
 

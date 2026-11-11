@@ -20,7 +20,7 @@ for fn, fields in REQ.items():
         for k in ("date", "due", "expires", "issued"):
             v = r.get(k)
             if v and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(v)): problems.append(f"{fn}: {r.get('id')} {k}={v} not YYYY-MM-DD")
-        if fn == "documents.json" and r.get("kind") == "copy" and re.search(r"passport|visa|eta|id card", (r.get("type","")+r.get("title","")), re.I):
+        if fn == "documents.json" and r.get("kind") == "copy" and re.search(r"passport|visa|id card|driv", (r.get("type","")+r.get("title","")), re.I):
             problems.append(f"documents.json: {r['id']} looks like an ID document — must be note-only")
 try:
     cs = [c for c in json.load(open(os.path.join(ME, "courses.json"))) if c.get("status") == "registered" and "DROP" not in c.get("verdict", "")]

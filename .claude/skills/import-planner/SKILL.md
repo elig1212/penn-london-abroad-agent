@@ -3,7 +3,7 @@ name: import-planner
 description: Bring a user's existing planning into the agent — an old Claude planner/dashboard artifact, a spreadsheet or CSV, a Path@Penn audit PDF, or a pasted list. Use for "import my planner", "here's my spreadsheet", onboarding with existing plans.
 ---
 # Import planner
-Goal: move existing plans into `me/courses.json` (and requirements notes) without overwriting anything the agent already has.
+Goal: move existing plans into `me/course-ideas.json` (future/planned courses) — only courses the user is registered for go in `me/courses.json` (and requirements notes) without overwriting anything the agent already has.
 
 1. **Get the rows**
    - claude.ai artifact link: `Artifact` read the page. If it's a Dashboard-type artifact, the data lives in its database:

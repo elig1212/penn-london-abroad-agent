@@ -23,7 +23,7 @@ Read-only. Never register, drop or change anything.
    lines like "12 CU are required. You currently have 6" give totals; "Choose one course with attribute AUPW" names a gen-ed attribute.
 6. **In-progress ("registered") courses count as completed.** For every requirement, write it to `me/requirements.json`:
    `{id, program: major|minor|gen-ed, name, needed_cu, done_cu, in_progress_cu, satisfied_by: ["ECON 2100", "ECON 2300 (in progress)"],
-   notes, source: "Path@Penn audit <date>"}` — `done_cu` = completed, `in_progress_cu` = registered this term. A requirement whose
+   notes, source: "Path@Penn audit <date>"}` — `done_cu` = completed, `in_progress_cu` = currently enrolled at Penn this term. Courses planned or taken abroad never count here until the credit is posted. A requirement whose
    completed + in-progress credits cover it is treated as **satisfied** (dashboards show it done, labelled "in progress"). Only
    requirements still short after counting in-progress courses are "still needed". Also save major/minor/school/grad term to the
    profile and advisors to `me/contacts.json` (`role`, `email`, `when_to_use`).

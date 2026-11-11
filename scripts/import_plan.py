@@ -46,7 +46,7 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("file"); ap.add_argument("--source", default="")
     ap.add_argument("--commit", action="store_true"); a = ap.parse_args()
     rows = load(a.file)
-    p = os.path.join(ME, "courses.json"); courses = json.load(open(p)) if os.path.exists(p) else []
+    p = os.path.join(ME, "course-ideas.json"); courses = json.load(open(p)) if os.path.exists(p) else []
     key = lambda code, term: (re.sub(r"\s+", "", code).upper(), term.lower())
     have = {key(c["id"], c.get("term", "")) for c in courses}
     ids = {c["id"] for c in courses}
@@ -68,11 +68,11 @@ def main():
                     "notes": pick(r, "note"), "counts_as": pick(r, "counts_as"), "cu": pick(r, "cu"),
                     "confidence": "unverified", "source": a.source or f"import:{os.path.basename(a.file)}", "updated": today})
         have.add(key(base, term)); ids.add(code)
-    print(f"{len(rows)} rows read · {len(new)} new · {len(kept)} already in courses.json (kept as is)")
+    print(f"{len(rows)} rows read · {len(new)} new · {len(kept)} already present (kept as is)")
     for n in new: print(f"  + {n['term']:<12} {n['host_school'][:12]:<12} {n['id']:<10} {n['title'][:40]:<40} → {n['counts_as'][:40]}")
     for k in kept: print(f"  = {k}")
     if a.commit:
-        json.dump(courses + new, open(p, "w"), indent=1, ensure_ascii=False); print("written to me/courses.json")
+        json.dump(courses + new, open(p, "w"), indent=1, ensure_ascii=False); print("written to course-ideas.json (planned courses; registered ones belong in courses.json)")
     else:
         print("Preview only — rerun with --commit to save.")
 

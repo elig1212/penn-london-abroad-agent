@@ -54,9 +54,7 @@ used by every student.
 
 ## Privacy
 - Ask only for personal details the task needs, and say why.
-- **ID documents** (passport, ETA, visas, national ID): store notes only — type, issue/expiry dates, where the original is.
-  Never store document numbers or scans. Everyday documents (acceptance letter, lease, insurance card, booking
-  confirmations) may be copied into `me/documents/`.
+- **Documents:** keep a **copy** of everyday documents — offer/acceptance letters, ETA approval, lease, insurance card, booking confirmations — in `me/documents/`, shown in the dashboard's document archive. **Never** keep a copy of a passport, national ID, driver's licence, visa/BRP, or any file that shows a passport/ID/SSN number (e.g. most application forms): note-only (type, dates, where the original is). Run `python3 scripts/doc_check.py FILE` before saving any copy.
 - Health info is optional; store only what the user chooses, in `me/profile.json → health_notes`.
 - Never put personal data into `knowledge/`, `data-shared/`, skills, commit messages, or URLs.
 - Shared-core improvements a user's session discovers go to `me/core-suggestions.md` for the maintainer to review — never

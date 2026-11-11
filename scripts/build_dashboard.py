@@ -46,11 +46,12 @@ def main():
     payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     html = TEMPLATE.replace("__DATA__", payload)
     out = os.path.join(ME, "dashboard.html")
-    open(out, "w").write(html)
+    open(out, "w", encoding="utf-8").write(html)
     print(f"wrote {out} ({len(html)//1024} KB)")
 
 
-TEMPLATE = r"""<title>Abroad Planner</title>
+TEMPLATE = r"""<meta charset="utf-8">
+<title>Abroad Planner</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -142,7 +143,7 @@ const arrive = P.program_dates?.arrive_by;
 const spent = (D.expenses || []).reduce((s, e) => s + Number(e.usd || 0), 0);
 const expRefs = new Set((D.expenses || []).map(e => e.ref).filter(Boolean));
 const booked = (D.bookings || []).filter(b => b.status !== 'cancelled' && b.cost?.usd && !expRefs.has(b.confirmation_ref)).reduce((s, b) => s + Number(b.cost.usd), 0);
-const kept = (D.courses || []).filter(c => c.status === 'registered' && !/DROP/.test(c.verdict || ''));
+const kept = (D.courses || []).filter(c => c.status === 'registered');
 
 let h = `<header>
   <div><h1>${esc(P.name || 'Your')} · ${esc(P.host_school || 'Study abroad')}</h1>
@@ -151,7 +152,7 @@ let h = `<header>
     <div><span>Due in 14 days</span><b>${soon.length}</b></div>
     <div><span>Open tasks</span><b>${todo.length}</b></div>
     <div><span>${arrive ? 'Arrive by' : 'Arrival'}</span><b>${arrive ? (diff(arrive) >= 0 ? diff(arrive) + 'd' : 'arrived') : '—'}</b></div>
-    <div><span>Modules kept</span><b>${kept.length}</b></div>
+    <div><span>Courses registered</span><b>${kept.length}</b></div>
     <div><span>Spent &amp; booked</span><b>${usd(spent + booked)}</b><small class="muted" style="font-size:.72rem">${usd(spent)} spent · ${usd(booked)} booked</small></div>
   </div></header>`;
 
@@ -168,27 +169,32 @@ let wk = `<div class="week" id="week"><div></div>${DAYS.map(d => `<div class="hd
 for (let r = START; r < END; r++) wk += `<div class="hr">${r}:00</div>` + DAYS.map(() => '<div class="cell"></div>').join('');
 wk += '</div>';
 const slots = [];
-(D.courses || []).filter(c => c.status === 'registered' || c.status === 'considering').forEach(c => (c.days || []).forEach(s => {
+const myCourses = (D.courses || []).filter(c => c.status === 'registered');
+const tutOptions = [];
+myCourses.forEach(c => (c.days || []).forEach(s => {
   const di = DAYS.indexOf(s.day); if (di < 0) return;
+  if (/option/i.test(s.type || '')) { tutOptions.push(`${c.id} ${s.day} ${s.start}`); return; }
   const drop = /DROP/.test(c.verdict || ''), opt = /option/i.test(s.type || '') || c.status === 'considering';
   slots.push({ di, top: HEAD + (toH(s.start) - START) * ROW, ht: (toH(s.end) - toH(s.start)) * ROW - 2,
     cls: drop ? 'drop' : opt ? 'opt' : (s.provisional ? 'prov' : ''), label: `${c.id} ${s.type ? '· ' + s.type.replace(' option', '?') : ''}<br>${s.start}–${s.end}` });
 }));
-const noTimes = (D.courses || []).filter(c => (c.status === 'registered' || c.status === 'considering') && !/DROP/.test(c.verdict || '') && c.host_school && !/^penn$/i.test(c.host_school) && !(c.days || []).length);
+const noTimes = myCourses.filter(c => c.host_school && !/^penn$/i.test(c.host_school) && !(c.days || []).length);
 h += `<div class="grid"><div class="col">
 <section><h2>Weekly timetable <small>${(D.courses || []).some(c => (c.days || []).some(d => d.provisional)) ? 'provisional' : 'confirmed'}</small></h2>
 <div class="scroll">${wk}</div>
+${tutOptions.length ? `<p class="muted" style="font-size:.85rem;margin:0">Tutorial slots you may be placed in (not shown on the grid): ${tutOptions.map(esc).join(' · ')}</p>` : ''}
 ${noTimes.length ? `<p class="muted" style="font-size:.85rem;margin:0">Not on the grid yet: ${noTimes.map(c => esc(c.id) + (c.title ? ' ' + esc(c.title) : '')).join(', ')} — class times not found yet (the host school may not have published them, or they haven\'t been looked up). Ask the planner to "look up my class times".</p>` : ''}
 <div class="legend"><span class="pill">registered</span><span class="pill plain">option / considering</span><span class="pill bad">planned drop</span><span>dashed edge = provisional time</span></div></section>`;
 
 const xs = (x) => ({ precedent: ['good', 'precedent'], approved: ['good', 'approved'], none: ['warn', 'needs XCAT'], drafted: ['plain', 'drafted'], submitted: ['plain', 'submitted'], denied: ['bad', 'denied'] }[x?.status] || ['plain', x?.status || '—']);
 const vd = (v) => /^KEEP/.test(v) ? 'good' : /^DROP/.test(v) ? 'bad' : /UNLIKELY/.test(v) ? 'bad' : 'warn';
-h += `<section><h2>Courses <small>host → Penn</small></h2><div class="scroll"><table><thead><tr><th>Code</th><th>Module</th><th>Penn credit</th><th>XCAT</th><th>Exam May–Jun</th><th>Verdict</th></tr></thead><tbody>` +
-  (D.courses || []).map(c => { const [k, l] = xs(c.xcat); return `<tr class="${/DROP/.test(c.verdict || '') ? 'dropped' : ''}"><td class="mono">${esc(c.id)}</td><td>${esc(c.title)}<div class="muted" style="font-size:.8rem">L${esc(c.level)} · ${esc(c.assessment || '')}</div></td><td>${esc(c.penn_equivalent || '—')}</td><td><span class="pill ${k}">${l}</span>${c.xcat?.precedent_expires ? `<div class="muted mono" style="font-size:.72rem">exp ${c.xcat.precedent_expires}</div>` : ''}</td><td>${c.has_exam_in_exam_period ? '<span class="pill bad">yes</span>' : '<span class="pill good">no</span>'}</td><td><span class="pill ${vd(c.verdict || '')}">${esc(c.verdict || c.status)}</span></td></tr>`; }).join('') +
+h += `<section><h2>My courses <small>${myCourses.length} registered · host → Penn</small></h2><div class="scroll"><table><thead><tr><th>Code</th><th>Module</th><th>Penn credit</th><th>XCAT</th><th>Exam May–Jun</th><th>Days</th></tr></thead><tbody>` +
+  myCourses.map(c => { const [k, l] = xs(c.xcat); return `<tr class="${/DROP/.test(c.verdict || '') ? 'dropped' : ''}"><td class="mono">${esc(c.id)}</td><td>${esc(c.title)}<div class="muted" style="font-size:.8rem">L${esc(c.level)} · ${esc(c.assessment || '')}</div></td><td>${esc(c.penn_equivalent || '—')}</td><td><span class="pill ${k}">${l}</span>${c.xcat?.precedent_expires ? `<div class="muted mono" style="font-size:.72rem">exp ${c.xcat.precedent_expires}</div>` : ''}</td><td>${c.has_exam_in_exam_period ? '<span class="pill bad">yes</span>' : '<span class="pill good">no</span>'}</td><td class="mono" style="font-size:.8rem">${(c.days || []).filter(d => !/option/i.test(d.type || '')).map(d => esc(`${d.day} ${d.start}–${d.end}`)).join('<br>') || '—'}</td></tr>`; }).join('') +
   `</tbody></table></div></section>`;
 
 const reqDone = r => (r.done_cu || 0) + (r.in_progress_cu || 0);
 const reqMet = r => r.needed_cu ? reqDone(r) >= r.needed_cu : r.status === 'done';
+const cuLeft = rs => rs.reduce((n, r) => n + (r.needed_cu ? Math.max(0, r.needed_cu - reqDone(r)) : (reqMet(r) ? 0 : 1)), 0);
 const reqs = [...(D.requirements || [])].sort((a, b) => reqMet(a) - reqMet(b));
 const reqRow = r => {
   const met = reqMet(r), pct = r.needed_cu ? Math.min(100, 100 * reqDone(r) / r.needed_cu) : (met ? 100 : 0);
@@ -199,9 +205,9 @@ const reqRow = r => {
 };
 const GROUPS = [['major', 'Major'], ['minor', 'Minor'], ['gen-ed', 'Gen eds']];
 const other = reqs.filter(r => !GROUPS.some(([k]) => k === r.program));
-h += `<section><h2>Degree requirements <small>${reqs.filter(r => !reqMet(r)).length} still needed · in-progress courses count as done</small></h2>` +
+h += `<section><h2>Degree requirements <small>${cuLeft(reqs)} CU left · courses you're taking at Penn now count as done; planned abroad courses don't</small></h2>` +
   [...GROUPS.map(([k, label]) => [label, reqs.filter(r => r.program === k)]), ['Other', other]].filter(([, rs]) => rs.length)
-    .map(([label, rs]) => `<h3 style="margin:10px 0 0;font:600 .78rem var(--f-data);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">${label} · ${rs.filter(r => !reqMet(r)).length} left</h3>` + rs.map(reqRow).join('')).join('') + `</section></div><div class="col">`;
+    .map(([label, rs]) => `<h3 style="margin:10px 0 0;font:600 .78rem var(--f-data);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">${label} · ${cuLeft(rs)} CU left</h3>` + rs.map(reqRow).join('')).join('') + `</section></div><div class="col">`;
 
 // timeline
 let lastM = '';
@@ -222,7 +228,10 @@ h += `<section><h2>Budget <small>USD · ECB rates</small></h2>` + (keys.length ?
 const liveB = (D.bookings || []).filter(b => b.status !== 'cancelled');
 h += `<section><h2>Bookings <small>${liveB.length}${liveB.length !== (D.bookings || []).length ? ' · ' + ((D.bookings || []).length - liveB.length) + ' cancelled' : ''}</small></h2>` + ((D.bookings || []).length ? `<ul class="list">${D.bookings.sort((a, b) => (a.start || '').localeCompare(b.start || '')).map(b => `<li><span class="date">${fmt((b.start || '').slice(0, 10)).slice(0, 11)}</span><span>${esc(b.type)} · ${esc(b.from || '')}${b.to ? ' → ' + esc(b.to) : ''} <span class="muted">${esc(b.provider || '')}</span></span><span class="mono">${b.status === 'cancelled' ? '<span class="pill bad">cancelled</span>' : (b.cost?.usd ? usd(b.cost.usd) : '')}</span></li>`).join('')}</ul>` : `<p class="empty">No bookings yet. The agent adds flights, trains and stays it finds in your inboxes.</p>`) + `</section>`;
 
-h += `<section><h2>Documents <small>notes only for ID</small></h2><ul class="list">${(D.documents || []).map(d => `<li><span class="date">${d.expires ? 'exp ' + esc(d.expires) : esc(d.issued || '')}</span><span>${esc(d.title)} <span class="muted">· ${esc(d.where_original || d.path || '')}</span></span><span class="pill plain">${esc(d.kind)}</span></li>`).join('') || '<li class="empty">None yet</li>'}</ul></section>`;
+const docs = D.documents || [], copies = docs.filter(d => d.kind === 'copy' && d.path), notes = docs.filter(d => !(d.kind === 'copy' && d.path));
+h += `<section><h2>Documents <small>${copies.length} saved · ${notes.length} notes</small></h2>` +
+  (copies.length ? `<ul class="list">${copies.map(d => `<li><span class="date">${esc(d.issued || '')}</span><span><a href="${esc(d.path)}" target="_blank" rel="noopener">${esc(d.title)}</a><br><span class="muted" style="font-size:.82rem">${esc(d.type || '')}${d.expires ? ' · expires ' + esc(d.expires) : ''}</span></span><a class="pill" href="${esc(d.path)}" target="_blank" rel="noopener">Open</a></li>`).join('')}</ul>` : '<p class="empty">No saved documents yet. Ask the planner to save your offer letter, lease or ETA approval.</p>') +
+  (notes.length ? `<p class="muted" style="font-size:.82rem;margin:8px 0 0">Kept as notes only (ID details are never stored):</p><ul class="list">${notes.map(d => `<li><span class="date">${d.expires ? 'exp ' + esc(d.expires) : esc(d.issued || '')}</span><span>${esc(d.title)} <span class="muted">· ${esc(d.where_original || '')}</span></span><span class="pill plain">note</span></li>`).join('')}</ul>` : '') + `</section>`;
 
 h += `<section><h2>Open questions</h2><ul class="list">${(D.questions || []).map(q => `<li style="grid-template-columns:1fr"><span>${esc(q)}</span></li>`).join('') || '<li class="empty">None</li>'}</ul></section>`;
 

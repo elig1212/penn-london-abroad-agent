@@ -28,3 +28,5 @@ Remember: only an XCAT decision confirms credit — advisors can't pre-confirm.
 Update `me/courses.json` and add deadline/tasks (registration window, add/drop dates) after the user agrees.
 
 **Timetable rule:** every registered module must have `days` filled in from the host timetable, or `notes` saying the times aren't published yet (with the date checked). Re-check unpublished times weekly; the dashboard lists modules missing from the timetable grid.
+
+**What goes where:** `me/courses.json` holds **only modules the user is actually registered for** (`status: "registered"`) — that's what the dashboard's course list and timetable show. Candidates, comparisons and suggestions go in `me/course-ideas.json` (never on the dashboard) and are shown in chat when the user asks. Don't attach keep/drop verdicts to registered modules unless the user asks for a recommendation.
