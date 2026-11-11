@@ -26,3 +26,5 @@ Output a table: course · term · level · exam? · days/times · precedent/need
 (KEEP / ADD / DROP / MAYBE), labelled [FACT]/[PRECEDENT]/[SUGGESTION]. Check for timetable clashes across the whole plan.
 Remember: only an XCAT decision confirms credit — advisors can't pre-confirm.
 Update `me/courses.json` and add deadline/tasks (registration window, add/drop dates) after the user agrees.
+
+**Timetable rule:** every registered module must have `days` filled in from the host timetable, or `notes` saying the times aren't published yet (with the date checked). Re-check unpublished times weekly; the dashboard lists modules missing from the timetable grid.

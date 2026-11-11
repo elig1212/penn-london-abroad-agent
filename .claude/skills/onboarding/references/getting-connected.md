@@ -19,24 +19,33 @@ On Yes — open it for them (macOS, when you can run shell commands):
 2. `open -Ra "Google Chrome"` — if this fails, Chrome isn't installed: run `open "https://www.google.com/chrome/"` (opens in their default
    browser), say "Install Chrome, then click Done", show a Done popup, and re-check.
 3. `open -a "Google Chrome" "<install link>"` — the Chrome Web Store page opens directly in Chrome.
-4. One line: "In the Chrome window I just opened, click **Add to Chrome**, then open the extension and sign in with your Claude account."
-If you can't run shell commands (or `open` fails): show the install link as a single clickable link with that same one line.
-If the tool error gave no link: tell them to search the Chrome Web Store for "Claude" by Anthropic.
+4. In the **same message**, always show the link too, on its own line, as a markdown link — e.g.
+   "I've opened the install page in Chrome. If you don't see it, use this link:" then `[Install Claude in Chrome](<install link>)`.
+   Then: "Click **Add to Chrome**, then open the extension and sign in to Claude with the same account you use in this app."
+   Never refer to "the link above" — the link must be in the message you're sending.
+If you can't run shell commands (or `open` fails): the same message without "I've opened…".
+If the tool error gave no link: open `https://chromewebstore.google.com` in Chrome (and show that link) and tell them to search
+"Claude" and pick the extension by Anthropic.
 Done popup → re-check tabs_context_mcp. If it still fails, add to "Needs you" with the exact error and continue (steps that need Chrome
 fall back to asking the user in chat).
 
 ## B. Gmail + Google Calendar connectors (needed for email scans and calendar sync)
 Check: ToolSearch for Gmail (search_threads) and Google Calendar (list_calendars). Call `list_calendars` (read-only) to confirm.
-Permission: "Do I have your permission to connect your Penn Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
+Only after §A is finished (the extension is installed and signed in to Claude). Before the permission popup, say clearly:
+"Next we connect Gmail and Google Calendar. When Google asks which account to use, choose your **school** email (<school email>) —
+even if your Claude account uses a different email."
+Permission: "Do I have your permission to connect your school Gmail and Google Calendar? (HIGHLY RECOMMENDED)"
 **Preferred — one-click Connect card (tested 2026-11-10):**
 1. Load the registry tools: ToolSearch "select:mcp__mcp-registry__search_mcp_registry,mcp__mcp-registry__suggest_connectors".
 2. `search_mcp_registry` with keywords ["gmail", "google calendar"] → take the `directoryUuid` of the results named exactly
    "Gmail" and "Google Calendar" (at last check: Gmail 2701e52f-b826-4aaf-8b25-11f2a97c98b0, Google Calendar
    2a838eaa-f7b4-4bc2-bd47-c326f3c813c5 — always use the search result, not these, if they differ). Skip any that show `connected: true`.
 3. `suggest_connectors` with those uuids and keywords ["study abroad"]. The app shows a card with a **Connect** button for each.
-4. Tell the user in one line: "Click **Connect** on Gmail and Google Calendar, and pick the Google account that gets your Penn Abroad
-   and host-school email (usually your Penn email)."
-5. Done popup ("Done" · "Skip this") → re-check with `list_calendars` and a 1-result Gmail search. If a connector still isn't available,
+4. Tell the user: "Click **Connect** on Gmail, and when Google shows its account list, pick **<school email>**. Then do the same for
+   Google Calendar."
+5. Done popup ("Done" · "Skip this") → re-check with `list_calendars` and a 1-result Gmail search, and confirm the Gmail connector is the
+   school account (the result's recipient/viewUrl shows the address). Wrong account → explain: Settings → Connectors → Gmail →
+   Disconnect, then Connect again and pick the school address. If a connector still isn't available,
    the app may need a new message or a restart to load it — say so, and continue setup (email/calendar steps go to "Needs you").
 **Fallback (no registry tools in this app):** Claude app → Settings → Connectors → Gmail → Connect → choose the Penn Google account →
 Allow; same for Google Calendar. Then the Done popup.
@@ -47,14 +56,9 @@ Note: the connector links one Google account; a second (personal) inbox is read 
 and your personal email — that's how I find your Penn Abroad and host-school dates, bookings and receipts to build your dashboard and
 answer your questions. Any Chrome profile is fine, as long as it's the one where Claude in Chrome is installed."
 
-**C1 — Ask for the two addresses** (onboarding Step 1b; one AskUserQuestion call, two questions). The user types each address into the
-popup's "Other" box:
-| header | question | options |
-|---|---|---|
-| School email | What's your school email address? Type it in "Other". | "It's my Penn Gmail" · "I don't have one" |
-| Personal email | What's your personal email address? Type it in "Other". | "I'll skip this" · "Same as my school email" |
-(If they pick an option instead of typing, ask once more in chat for the address, or mark it skipped.) Save to
-`profile.emails = {school, personal}` — addresses only. Don't remind them to check spelling; a typo just fails at sign-in.
+**C1 — Ask for the two addresses** (onboarding Step 2). Plain chat messages, one at a time — no popup, no options:
+"Please type your **school** email address." → wait → "Now please type your **personal** email address." Assume everyone has both.
+Save to `profile.emails = {school, personal}` — addresses only. Don't remind them to check spelling; a typo just fails at sign-in.
 
 **C2 — Check what's already signed in:** navigate a tab to `https://mail.google.com/mail/u/0/` and read the title
 ("Inbox … - <address> - Gmail"); repeat for `/u/1/`, `/u/2/`. Any address already signed in → skip it.

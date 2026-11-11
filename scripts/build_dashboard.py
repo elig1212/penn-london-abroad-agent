@@ -140,6 +140,8 @@ const todo = (D.tasks || []).filter(t => t.status !== 'done');
 const soon = open.filter(d => diff(d.date) <= 14);
 const arrive = P.program_dates?.arrive_by;
 const spent = (D.expenses || []).reduce((s, e) => s + Number(e.usd || 0), 0);
+const expRefs = new Set((D.expenses || []).map(e => e.ref).filter(Boolean));
+const booked = (D.bookings || []).filter(b => b.status !== 'cancelled' && b.cost?.usd && !expRefs.has(b.confirmation_ref)).reduce((s, b) => s + Number(b.cost.usd), 0);
 const kept = (D.courses || []).filter(c => c.status === 'registered' && !/DROP/.test(c.verdict || ''));
 
 let h = `<header>
@@ -150,7 +152,7 @@ let h = `<header>
     <div><span>Open tasks</span><b>${todo.length}</b></div>
     <div><span>${arrive ? 'Arrive by' : 'Arrival'}</span><b>${arrive ? (diff(arrive) >= 0 ? diff(arrive) + 'd' : 'arrived') : '—'}</b></div>
     <div><span>Modules kept</span><b>${kept.length}</b></div>
-    <div><span>Spent so far</span><b>${usd(spent)}</b></div>
+    <div><span>Spent &amp; booked</span><b>${usd(spent + booked)}</b><small class="muted" style="font-size:.72rem">${usd(spent)} spent · ${usd(booked)} booked</small></div>
   </div></header>`;
 
 const attn = [...soon.map(d => ({ date: d.date, t: d.title, n: diff(d.date), k: 'Deadline' })),
@@ -172,9 +174,11 @@ const slots = [];
   slots.push({ di, top: HEAD + (toH(s.start) - START) * ROW, ht: (toH(s.end) - toH(s.start)) * ROW - 2,
     cls: drop ? 'drop' : opt ? 'opt' : (s.provisional ? 'prov' : ''), label: `${c.id} ${s.type ? '· ' + s.type.replace(' option', '?') : ''}<br>${s.start}–${s.end}` });
 }));
+const noTimes = (D.courses || []).filter(c => (c.status === 'registered' || c.status === 'considering') && !/DROP/.test(c.verdict || '') && c.host_school && !/^penn$/i.test(c.host_school) && !(c.days || []).length);
 h += `<div class="grid"><div class="col">
 <section><h2>Weekly timetable <small>${(D.courses || []).some(c => (c.days || []).some(d => d.provisional)) ? 'provisional' : 'confirmed'}</small></h2>
 <div class="scroll">${wk}</div>
+${noTimes.length ? `<p class="muted" style="font-size:.85rem;margin:0">Not on the grid yet: ${noTimes.map(c => esc(c.id) + (c.title ? ' ' + esc(c.title) : '')).join(', ')} — class times not found yet (the host school may not have published them, or they haven\'t been looked up). Ask the planner to "look up my class times".</p>` : ''}
 <div class="legend"><span class="pill">registered</span><span class="pill plain">option / considering</span><span class="pill bad">planned drop</span><span>dashed edge = provisional time</span></div></section>`;
 
 const xs = (x) => ({ precedent: ['good', 'precedent'], approved: ['good', 'approved'], none: ['warn', 'needs XCAT'], drafted: ['plain', 'drafted'], submitted: ['plain', 'submitted'], denied: ['bad', 'denied'] }[x?.status] || ['plain', x?.status || '—']);
@@ -186,13 +190,18 @@ h += `<section><h2>Courses <small>host → Penn</small></h2><div class="scroll">
 const reqDone = r => (r.done_cu || 0) + (r.in_progress_cu || 0);
 const reqMet = r => r.needed_cu ? reqDone(r) >= r.needed_cu : r.status === 'done';
 const reqs = [...(D.requirements || [])].sort((a, b) => reqMet(a) - reqMet(b));
-h += `<section><h2>Degree requirements <small>${reqs.filter(r => !reqMet(r)).length} still needed · in-progress courses count as done</small></h2>` + reqs.map(r => {
+const reqRow = r => {
   const met = reqMet(r), pct = r.needed_cu ? Math.min(100, 100 * reqDone(r) / r.needed_cu) : (met ? 100 : 0);
   const plan = (D.courses || []).filter(c => c.penn_requirement === r.id && !/DROP|UNLIKELY/.test(c.verdict || '')).map(c => c.id);
   const pill = met ? `<span class="pill good">${r.in_progress_cu ? 'done · in progress' : 'done'}</span>` : `<span class="pill ${plan.length ? 'good' : 'plain'}">${esc(r.program)}</span>`;
   const sub = (r.satisfied_by || []).length ? 'Covered by: ' + r.satisfied_by.join(', ') : plan.length ? 'Planned abroad: ' + plan.join(', ') : (r.notes || '');
   return `<div class="req"><div><div>${esc(r.name)}</div><div class="muted" style="font-size:.82rem">${esc(sub)}</div></div>${pill}<div class="bar" style="grid-column:1/-1"><i style="width:${pct}%;${met ? 'background:var(--good)' : ''}"></i></div></div>`;
-}).join('') + `</section></div><div class="col">`;
+};
+const GROUPS = [['major', 'Major'], ['minor', 'Minor'], ['gen-ed', 'Gen eds']];
+const other = reqs.filter(r => !GROUPS.some(([k]) => k === r.program));
+h += `<section><h2>Degree requirements <small>${reqs.filter(r => !reqMet(r)).length} still needed · in-progress courses count as done</small></h2>` +
+  [...GROUPS.map(([k, label]) => [label, reqs.filter(r => r.program === k)]), ['Other', other]].filter(([, rs]) => rs.length)
+    .map(([label, rs]) => `<h3 style="margin:10px 0 0;font:600 .78rem var(--f-data);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">${label} · ${rs.filter(r => !reqMet(r)).length} left</h3>` + rs.map(reqRow).join('')).join('') + `</section></div><div class="col">`;
 
 // timeline
 let lastM = '';
@@ -210,7 +219,8 @@ h += `<section><h2>Budget <small>USD · ECB rates</small></h2>` + (keys.length ?
   return `<div class="req"><div>${esc(k)}</div><span class="mono">${usd(s)}${p ? ' / ' + usd(p) : ''}</span><div class="bar" style="grid-column:1/-1"><i style="width:${pct}%;${p && s > p ? 'background:var(--bad)' : ''}"></i></div></div>`; }).join('')
   : `<p class="empty">No spending logged yet. Tell the agent "log £12 lunch" or ask it to import a bank CSV or scan receipts.</p>`) + `</section>`;
 
-h += `<section><h2>Bookings <small>${(D.bookings || []).length}</small></h2>` + ((D.bookings || []).length ? `<ul class="list">${D.bookings.sort((a, b) => (a.start || '').localeCompare(b.start || '')).map(b => `<li><span class="date">${fmt((b.start || '').slice(0, 10)).slice(0, 11)}</span><span>${esc(b.type)} · ${esc(b.from || '')}${b.to ? ' → ' + esc(b.to) : ''} <span class="muted">${esc(b.provider || '')}</span></span><span class="mono">${b.cost?.usd ? usd(b.cost.usd) : ''}</span></li>`).join('')}</ul>` : `<p class="empty">No bookings yet. The agent adds flights, trains and stays it finds in your inboxes.</p>`) + `</section>`;
+const liveB = (D.bookings || []).filter(b => b.status !== 'cancelled');
+h += `<section><h2>Bookings <small>${liveB.length}${liveB.length !== (D.bookings || []).length ? ' · ' + ((D.bookings || []).length - liveB.length) + ' cancelled' : ''}</small></h2>` + ((D.bookings || []).length ? `<ul class="list">${D.bookings.sort((a, b) => (a.start || '').localeCompare(b.start || '')).map(b => `<li><span class="date">${fmt((b.start || '').slice(0, 10)).slice(0, 11)}</span><span>${esc(b.type)} · ${esc(b.from || '')}${b.to ? ' → ' + esc(b.to) : ''} <span class="muted">${esc(b.provider || '')}</span></span><span class="mono">${b.status === 'cancelled' ? '<span class="pill bad">cancelled</span>' : (b.cost?.usd ? usd(b.cost.usd) : '')}</span></li>`).join('')}</ul>` : `<p class="empty">No bookings yet. The agent adds flights, trains and stays it finds in your inboxes.</p>`) + `</section>`;
 
 h += `<section><h2>Documents <small>notes only for ID</small></h2><ul class="list">${(D.documents || []).map(d => `<li><span class="date">${d.expires ? 'exp ' + esc(d.expires) : esc(d.issued || '')}</span><span>${esc(d.title)} <span class="muted">· ${esc(d.where_original || d.path || '')}</span></span><span class="pill plain">${esc(d.kind)}</span></li>`).join('') || '<li class="empty">None yet</li>'}</ul></section>`;
 
